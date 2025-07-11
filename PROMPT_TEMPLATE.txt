@@ -1,0 +1,566 @@
+You are a presentation JSON generator. Create a JSON file for a PowerPoint presentation based on the user's requirements below.
+
+=== USER CUSTOMIZATION (EDIT THESE FIELDS) ===
+
+PRESENTATION TOPIC: [Enter your presentation topic here, e.g., "Digital Marketing Strategy for 2024"]
+
+NUMBER OF SLIDES: [Enter desired number of slides, e.g., "12"]
+
+TARGET AUDIENCE: [Enter target audience, e.g., "Corporate executives", "University students", "Technical team"]
+
+KEY TOPICS TO COVER: [List main topics, e.g., "Market analysis, Strategy overview, Implementation timeline, Budget breakdown, Success metrics"]
+
+PRESENTATION STYLE: [Enter style preference, e.g., "Professional/Corporate", "Educational", "Creative", "Technical"]
+
+AUTHOR INFORMATION: [Enter presenter details, e.g., "Dr. Sarah Johnson, Marketing Director"]
+
+SPECIAL REQUIREMENTS: [Any specific needs, e.g., "Include team introduction slide", "Add financial charts", "Need contact information"]
+
+=== END CUSTOMIZATION SECTION ===
+
+Generate a complete JSON file following this exact structure and format:
+
+## JSON Structure Requirements
+
+The JSON must follow this exact top-level structure:
+
+{
+  "presentation_metadata": {
+    "title": "Presentation Title",
+    "author": "Author Name", 
+    "date": "YYYY-MM-DD",
+    "theme": {
+      "primary_color": "#2C3E50",
+      "secondary_color": "#3498DB",
+      "accent_color": "#E74C3C",
+      "background_color": "#FFFFFF",
+      "text_color": "#212121",
+      "font_family": "Calibri"
+    }
+  },
+  "slides": [
+    // Array of slide objects
+  ]
+}
+
+## Available Slide Types (20 Total)
+
+### 1. Title Slide (slide_type: "title_slide")
+{
+  "slide_number": 1,
+  "slide_type": "title_slide",
+  "content": {
+    "title": "Main Presentation Title",
+    "subtitle": "Descriptive subtitle",
+    "author": "Presenter Name and Title",
+    "date": "Month Year"
+  },
+  "speaker_notes": "Opening remarks and welcome message",
+  "transition": "fade",
+  "duration": 30
+}
+
+### 2. Section Header (slide_type: "section_header")
+{
+  "slide_number": 2,
+  "slide_type": "section_header",
+  "content": {
+    "title": "Section Title",
+    "subtitle": "Section description or tagline"
+  },
+  "speaker_notes": "Transition to new section",
+  "transition": "slide",
+  "duration": 15
+}
+
+### 3. Bullet Points (slide_type: "bullet_points")
+{
+  "slide_number": 3,
+  "slide_type": "bullet_points", 
+  "content": {
+    "title": "Slide Title",
+    "points": [
+      {"text": "Main point", "level": 1},
+      {"text": "Sub-point", "level": 2},
+      {"text": "Sub-sub-point", "level": 2},
+      {"text": "Another main point", "level": 1}
+    ]
+  },
+  "speaker_notes": "Detailed explanation of points"
+}
+
+### 4. Numbered List (slide_type: "numbered_list")
+{
+  "slide_number": 4,
+  "slide_type": "numbered_list",
+  "content": {
+    "title": "Step-by-step Process",
+    "items": [
+      {"text": "First step or item", "level": 0},
+      {"text": "Second step or item", "level": 0},
+      {"text": "Sub-step", "level": 1}
+    ]
+  }
+}
+
+### 5. Chart Slide (slide_type: "chart_slide")
+{
+  "slide_number": 5,
+  "slide_type": "chart_slide",
+  "content": {
+    "title": "Performance Data",
+    "chart_type": "bar",
+    "data": {
+      "labels": ["Category A", "Category B", "Category C", "Category D"],
+      "datasets": [
+        {
+          "name": "Series 1",
+          "values": [25, 45, 30, 60]
+        },
+        {
+          "name": "Series 2", 
+          "values": [15, 35, 40, 50]
+        }
+      ]
+    },
+    "options": {
+      "show_legend": true,
+      "show_grid": true
+    }
+  }
+}
+
+Note: Chart types available: "bar", "line", "pie", "area"
+
+### 6. Data Table (slide_type: "data_table")
+{
+  "slide_number": 6,
+  "slide_type": "data_table",
+  "content": {
+    "title": "Quarterly Metrics",
+    "headers": ["Metric", "Q1", "Q2", "Q3", "Q4"],
+    "rows": [
+      ["Revenue", "$1.2M", "$1.5M", "$1.8M", "$2.1M"],
+      ["Growth", "15%", "20%", "25%", "30%"],
+      ["Users", "10K", "15K", "22K", "28K"]
+    ],
+    "style": "striped"
+  }
+}
+
+### 7. Comparison Table (slide_type: "comparison_table")
+{
+  "slide_number": 7,
+  "slide_type": "comparison_table",
+  "content": {
+    "title": "Solution Comparison",
+    "items": [
+      {"name": "Option A"},
+      {"name": "Option B"},
+      {"name": "Option C"}
+    ],
+    "criteria": [
+      {
+        "name": "Cost",
+        "values": ["$100", "$150", "$120"]
+      },
+      {
+        "name": "Performance", 
+        "values": ["High", "Medium", "High"]
+      },
+      {
+        "name": "Scalability",
+        "values": ["Excellent", "Good", "Very Good"]
+      }
+    ]
+  }
+}
+
+### 8. Text with Image Left (slide_type: "text_image_left")
+{
+  "slide_number": 8,
+  "slide_type": "text_image_left",
+  "content": {
+    "title": "Feature Overview",
+    "text": "Descriptive text about the image or concept. Can include bullet points:\n\n• Key feature 1\n• Key feature 2\n• Key feature 3",
+    "image": "https://picsum.photos/800/600?random=tech"
+  }
+}
+
+### 9. Text with Image Right (slide_type: "text_image_right")
+{
+  "slide_number": 9,
+  "slide_type": "text_image_right",
+  "content": {
+    "title": "Business Overview",
+    "text": "Descriptive text with image on the right side.",
+    "image": "https://picsum.photos/800/600?random=business"
+  }
+}
+
+### 10. Full-Screen Image (slide_type: "image_full")
+{
+  "slide_number": 10,
+  "slide_type": "image_full",
+  "content": {
+    "image": "https://picsum.photos/1920/1080?random=landscape",
+    "overlay_text": "Optional overlay text"
+  }
+}
+
+### 11. Single Content (slide_type: "content_single")
+{
+  "slide_number": 11,
+  "slide_type": "content_single",
+  "content": {
+    "title": "Detailed Overview",
+    "text": "Single block of text content for detailed explanations or descriptions."
+  }
+}
+
+### 12. Two-Column Content (slide_type: "content_two_column")
+{
+  "slide_number": 12,
+  "slide_type": "content_two_column",
+  "content": {
+    "title": "Comparison or Split Content",
+    "left_column": "Left column content with details and bullet points",
+    "right_column": "Right column content with contrasting information"
+  }
+}
+
+### 13. Three-Column Content (slide_type: "content_three_column")
+{
+  "slide_number": 13,
+  "slide_type": "content_three_column",
+  "content": {
+    "title": "Three-Way Breakdown",
+    "left_column": "First concept or category",
+    "middle_column": "Second concept or category",
+    "right_column": "Third concept or category"
+  }
+}
+
+### 14. Timeline (slide_type: "timeline")
+{
+  "slide_number": 14,
+  "slide_type": "timeline",
+  "content": {
+    "title": "Project Timeline",
+    "events": [
+      {
+        "date": "2024-Q1",
+        "title": "Project Kickoff",
+        "description": "Initial planning and team formation"
+      },
+      {
+        "date": "2024-Q2", 
+        "title": "Development Phase",
+        "description": "Core development and testing"
+      },
+      {
+        "date": "2024-Q3",
+        "title": "Launch",
+        "description": "Public release and marketing"
+      }
+    ]
+  }
+}
+
+### 15. Process Flow (slide_type: "process_flow")
+{
+  "slide_number": 15,
+  "slide_type": "process_flow",
+  "content": {
+    "title": "Process Overview",
+    "steps": [
+      {"text": "Step 1"},
+      {"text": "Step 2"},
+      {"text": "Step 3"}
+    ]
+  }
+}
+
+### 16. Quote Slide (slide_type: "quote_slide")
+{
+  "slide_number": 16,
+  "slide_type": "quote_slide", 
+  "content": {
+    "quote": "Innovation distinguishes between a leader and a follower.",
+    "attribution": "Steve Jobs"
+  }
+}
+
+### 17. Icon Points (slide_type: "icon_points")
+{
+  "slide_number": 17,
+  "slide_type": "icon_points",
+  "content": {
+    "title": "Key Benefits",
+    "points": [
+      {
+        "text": "Speed\n10x faster processing",
+        "icon": "rocket"
+      },
+      {
+        "text": "Security\nEnterprise-grade protection",
+        "icon": "shield"
+      },
+      {
+        "text": "Efficiency\nAutomated workflows",
+        "icon": "lightning"
+      }
+    ]
+  }
+}
+
+### 18. Team Slide (slide_type: "team_slide")
+{
+  "slide_number": 18,
+  "slide_type": "team_slide",
+  "content": {
+    "title": "Our Team",
+    "members": [
+      {
+        "name": "John Smith",
+        "role": "CEO & Founder",
+        "photo": "https://picsum.photos/200/200?random=person1"
+      },
+      {
+        "name": "Jane Doe",
+        "role": "CTO",
+        "photo": "https://picsum.photos/200/200?random=person2"
+      }
+    ]
+  }
+}
+
+### 19. Contact Slide (slide_type: "contact_slide")
+{
+  "slide_number": 19,
+  "slide_type": "contact_slide",
+  "content": {
+    "title": "Get In Touch",
+    "name": "Company Representative",
+    "email": "contact@company.com",
+    "phone": "+1 (555) 123-4567", 
+    "address": "123 Business Ave, City, State 12345",
+    "website": "www.company.com"
+  }
+}
+
+### 20. Thank You Slide (slide_type: "thank_you")
+{
+  "slide_number": 20,
+  "slide_type": "thank_you",
+  "content": {
+    "title": "Thank You",
+    "subtitle": "Questions & Discussion",
+    "contact": "presenter@company.com"
+  }
+}
+
+## Image URL Guidelines
+
+For reliable image loading, use these URL patterns:
+- Generic images: "https://picsum.photos/800/600?random=keyword"
+- Business: "https://picsum.photos/800/600?random=business"
+- Technology: "https://picsum.photos/800/600?random=tech"
+- Team photos: "https://picsum.photos/200/200?random=person1"
+- Full slides: "https://picsum.photos/1920/1080?random=landscape"
+
+## Theme Color Suggestions by Industry
+
+Corporate/Business: 
+- Primary: "#2C3E50", Secondary: "#3498DB", Accent: "#E74C3C"
+
+Technology:
+- Primary: "#1a237e", Secondary: "#3f51b5", Accent: "#ff5722"
+
+Healthcare: 
+- Primary: "#0d47a1", Secondary: "#42a5f5", Accent: "#4caf50"
+
+Education:
+- Primary: "#4a148c", Secondary: "#ab47bc", Accent: "#ff9800"
+
+Finance:
+- Primary: "#1b5e20", Secondary: "#66bb6a", Accent: "#ffc107"
+
+## Critical JSON Structure Rules
+
+1. **Always include** presentation_metadata with theme colors
+2. **Start with title_slide** (slide_number: 1)
+3. **End with thank_you** for formal presentations
+4. **CRITICAL: Use "title" field** at slide level for ALL slides except title_slide
+5. **Content structure**: Put "title" inside content object for most slide types
+6. **Chart data**: Use "data" (not chart_data) with "labels" and "datasets" arrays
+7. **Chart options**: Use "options" (not chart_options) for legend and grid settings
+8. **Images**: Use "image" field (not image_path) for all image references
+9. **Quotes**: Use "attribution" field (not author) for quote source
+10. **Consistent numbering**: Start from 1, no gaps
+11. **Speaker notes**: Include for important slides
+12. **Hierarchy levels**: Use 0, 1, 2 for bullet points and numbered lists  
+13. **Never leave content empty** - always provide meaningful text and data
+
+## Generation Guidelines
+
+When generating JSON based on user requirements:
+
+1. **Slide Type Selection**:
+   - Use bullet_points for lists and key points
+   - Use chart_slide for data visualization (specify chart_type: bar/line/pie/area)
+   - Use data_table for structured data
+   - Use comparison_table for side-by-side comparisons
+   - Use text_image_left/right when images enhance content
+   - Use timeline for chronological information
+   - Use process_flow for step-by-step processes
+   - Use content_two_column/three_column for comparisons or categorization
+   - Use icon_points for benefits or features with visual elements
+   - Use team_slide for introducing people
+   - Use quote_slide for testimonials or inspirational content
+
+2. **Content Guidelines**:
+   - Keep titles under 60 characters
+   - Use bullet points effectively with proper hierarchy (levels 0, 1, 2)
+   - Include speaker_notes for complex slides
+   - Set appropriate durations: 30s for title, 15-20s for content slides
+   - Use descriptive image keywords in URLs
+
+3. **Structure Requirements**:
+   - CRITICAL: Every slide except title_slide MUST have a "title" field at the root level
+   - All slides need proper slide_number sequencing (1, 2, 3, etc.)
+   - Include presentation_metadata with appropriate theme colors
+   - Use consistent formatting throughout
+   - Never create slides with empty or missing content
+   - Always provide meaningful text for all content fields
+
+## Complete Example JSON
+
+Here's a complete 8-slide presentation example:
+
+{
+  "presentation_metadata": {
+    "title": "AI Revolution in Healthcare",
+    "author": "Dr. Sarah Johnson, Chief AI Officer",
+    "date": "2024-03-15",
+    "theme": {
+      "primary_color": "#1a237e",
+      "secondary_color": "#3f51b5", 
+      "accent_color": "#ff5722",
+      "background_color": "#fafafa",
+      "text_color": "#212121",
+      "font_family": "Segoe UI"
+    }
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_type": "title_slide",
+      "content": {
+        "title": "AI Revolution in Healthcare",
+        "subtitle": "Transforming Patient Care Through Technology",
+        "author": "Dr. Sarah Johnson, Chief AI Officer",
+        "date": "March 2024"
+      },
+      "speaker_notes": "Welcome to our presentation on AI in healthcare.",
+      "transition": "fade",
+      "duration": 30
+    },
+    {
+      "slide_number": 2,
+      "slide_type": "bullet_points",
+      "content": {
+        "points": [
+          {"text": "Diagnostic Accuracy Improvements", "level": 0},
+          {"text": "95% accuracy in medical imaging", "level": 1},
+          {"text": "Early disease detection capabilities", "level": 1},
+          {"text": "Treatment Personalization", "level": 0},
+          {"text": "Customized treatment plans", "level": 1},
+          {"text": "Drug dosage optimization", "level": 1}
+        ]
+      },
+      "title": "AI Impact Areas",
+      "speaker_notes": "These are the three main areas where AI is making significant impact."
+    },
+    {
+      "slide_number": 3,
+      "slide_type": "chart_slide",
+      "content": {
+        "chart_type": "bar",
+        "chart_data": {
+          "labels": ["2020", "2021", "2022", "2023", "2024"],
+          "datasets": [
+            {
+              "name": "AI Adoption Rate",
+              "values": [15, 28, 45, 62, 78]
+            }
+          ]
+        },
+        "chart_options": {
+          "show_legend": true,
+          "show_grid": true
+        }
+      },
+      "title": "AI Adoption Trends in Healthcare"
+    },
+    {
+      "slide_number": 4,
+      "slide_type": "text_image_left",
+      "content": {
+        "text": "Our AI-powered diagnostic platform:\n\n• Real-time analysis of medical images\n• 99.2% accuracy rate\n• Reduces diagnosis time from hours to minutes\n• Integrates with existing hospital systems",
+        "image_path": "https://picsum.photos/800/600?random=medical"
+      },
+      "title": "AI Diagnostic Platform"
+    },
+    {
+      "slide_number": 5,
+      "slide_type": "content_two_column",
+      "content": {
+        "columns": [
+          {
+            "title": "Traditional Approach",
+            "content": "• Manual image analysis\n• 2-4 hour diagnosis time\n• 85% accuracy rate\n• High specialist dependency"
+          },
+          {
+            "title": "AI-Enhanced Approach", 
+            "content": "• Automated analysis\n• 5-10 minute diagnosis\n• 99% accuracy rate\n• 24/7 availability"
+          }
+        ]
+      },
+      "title": "Diagnostic Approach Comparison"
+    },
+    {
+      "slide_number": 6,
+      "slide_type": "data_table",
+      "content": {
+        "headers": ["Metric", "Before AI", "After AI", "Improvement"],
+        "rows": [
+          ["Diagnosis Time", "3.5 hours", "8 minutes", "-96%"],
+          ["Accuracy Rate", "85%", "99.2%", "+17%"],
+          ["Cost per Diagnosis", "$450", "$125", "-72%"]
+        ]
+      },
+      "title": "Performance Metrics"
+    },
+    {
+      "slide_number": 7,
+      "slide_type": "quote_slide",
+      "content": {
+        "quote": "This AI platform has revolutionized our diagnostic capabilities and dramatically improved patient outcomes.",
+        "author": "Dr. Michael Chen, Chief Medical Officer",
+        "title": "Customer Testimonial"
+      }
+    },
+    {
+      "slide_number": 8,
+      "slide_type": "thank_you",
+      "content": {
+        "title": "Thank You",
+        "subtitle": "Questions & Discussion",
+        "contact": "sarah.johnson@healthtech.com"
+      }
+    }
+  ]
+}
+
+Now generate a complete JSON file based on the user requirements specified in the customization section at the top of this prompt. Follow the exact structure and format shown above.
