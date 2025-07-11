@@ -25,7 +25,7 @@ This project provides two complementary tools:
 
 ```bash
 # Clone the repository
-git clone (https://github.com/lhstorm/json2pptx.git)
+git clone "https://github.com/lhstorm/json2pptx.git"
 cd pdf_to_ppt_lite
 
 # Create virtual environment
