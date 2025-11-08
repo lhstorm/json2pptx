@@ -14,6 +14,8 @@ A powerful Python toolkit for bidirectional conversion between JSON and PowerPoi
 
 ### Advanced CLI Features ✨ NEW!
 - **Validation Mode**: Check JSON validity without generating presentations
+- **JSON Auto-Fix**: Automatically detect and fix common JSON errors
+- **Fix Reports**: Detailed JSON reports of validation errors with fix suggestions
 - **Batch Processing**: Convert multiple JSON files at once with glob patterns
 - **Progress Bars**: Visual feedback with tqdm for long operations
 - **Structured Logging**: JSON-formatted logs for CI/CD integration
@@ -70,6 +72,64 @@ python pptx-generator.py --version
 # Get help
 python pptx-generator.py --help
 ```
+
+### JSON Auto-Fix Mode 🔧 NEW!
+
+Automatically detect and fix common JSON structure errors:
+
+```bash
+# Generate detailed fix report (no fixing)
+python pptx-generator.py input.json --fix-report fix-report.json
+
+# Fix JSON and save to new file
+python pptx-generator.py input.json --fix --fix-output input.fixed.json
+
+# Fix JSON in-place (overwrites original)
+python pptx-generator.py input.json --fix --fix-inplace
+
+# Fix and generate report
+python pptx-generator.py input.json --fix --fix-output fixed.json --fix-report report.json
+```
+
+**What gets fixed automatically:**
+- ✅ Missing `"title"` fields (infers from content or generates default)
+- ✅ Wrong field names (`chart_data` → `data`, `image_path` → `image`, `author` → `attribution`)
+- ✅ Invalid slide types (suggests closest valid type using fuzzy matching)
+- ✅ Missing `"content"` fields with sensible defaults
+- ✅ Typos in field names (e.g., `chart_options` → `options`)
+
+**Example Fix Report:**
+```json
+{
+  "original_file": "input.json",
+  "validation_status": "failed",
+  "total_errors": 6,
+  "fixable_automatically": 6,
+  "requires_manual_review": 0,
+  "errors": [
+    {
+      "slide_number": 3,
+      "slide_type": "chart_slide",
+      "error_type": "wrong_field_name",
+      "field": "chart_data",
+      "message": "Field \"chart_data\" should be \"data\"",
+      "suggested_fix": {
+        "action": "rename_field",
+        "from": "chart_data",
+        "to": "data",
+        "reasoning": "Updated API - \"data\" is the correct field name"
+      }
+    }
+  ]
+}
+```
+
+**Typical Workflow:**
+1. **Check what's wrong:** `python pptx-generator.py input.json --fix-report report.json`
+2. **Review the report:** Check `report.json` to see all detected issues
+3. **Apply fixes:** `python pptx-generator.py input.json --fix --fix-output fixed.json`
+4. **Validate:** `python pptx-generator.py fixed.json --validate`
+5. **Generate:** `python pptx-generator.py fixed.json output.pptx`
 
 ## 📋 JSON Structure
 

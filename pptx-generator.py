@@ -224,9 +224,402 @@ class PresentationConstants:
     CHART_HEIGHT = Inches(4.5)
 
 
+class ValidationError:
+    """Represents a single validation error with fix suggestions."""
+
+    def __init__(self, slide_number: Optional[int], slide_type: Optional[str],
+                 error_type: str, field: Optional[str], severity: str,
+                 message: str, context: Dict[str, Any],
+                 suggested_fix: Optional[Dict[str, Any]] = None):
+        self.slide_number = slide_number
+        self.slide_type = slide_type
+        self.error_type = error_type
+        self.field = field
+        self.severity = severity
+        self.message = message
+        self.context = context
+        self.suggested_fix = suggested_fix or {}
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for JSON serialization."""
+        return {
+            'slide_number': self.slide_number,
+            'slide_type': self.slide_type,
+            'error_type': self.error_type,
+            'field': self.field,
+            'severity': self.severity,
+            'message': self.message,
+            'context': self.context,
+            'suggested_fix': self.suggested_fix
+        }
+
+
+class JSONFixer:
+    """Fixes common JSON structure errors automatically."""
+
+    # Field name mappings (wrong_name -> correct_name)
+    FIELD_MAPPINGS = {
+        'chart_data': 'data',
+        'chart_options': 'options',
+        'image_path': 'image',
+        'author': 'attribution',  # For quote slides
+    }
+
+    # Valid slide types
+    VALID_SLIDE_TYPES = {
+        'title_slide', 'section_header', 'bullet_points', 'numbered_list',
+        'chart_slide', 'data_table', 'comparison_table', 'text_image_left',
+        'text_image_right', 'image_full', 'content_single', 'content_two_column',
+        'content_three_column', 'timeline', 'process_flow', 'icon_points',
+        'team_slide', 'quote_slide', 'contact_slide', 'thank_you'
+    }
+
+    @classmethod
+    def validate_detailed(cls, data: Dict[str, Any]) -> List[ValidationError]:
+        """
+        Perform detailed validation and return list of errors.
+
+        Args:
+            data: JSON data to validate
+
+        Returns:
+            List of ValidationError objects
+        """
+        errors = []
+
+        # Check for slides array
+        if 'slides' not in data:
+            errors.append(ValidationError(
+                slide_number=None,
+                slide_type=None,
+                error_type='missing_field',
+                field='slides',
+                severity='error',
+                message='Missing required "slides" array at top level',
+                context={'current_keys': list(data.keys())},
+                suggested_fix={
+                    'action': 'add_field',
+                    'field': 'slides',
+                    'value': [],
+                    'reasoning': 'Slides array is required for presentation structure'
+                }
+            ))
+            return errors  # Can't continue without slides
+
+        slides = data.get('slides', [])
+
+        if not isinstance(slides, list):
+            errors.append(ValidationError(
+                slide_number=None,
+                slide_type=None,
+                error_type='wrong_type',
+                field='slides',
+                severity='error',
+                message=f'"slides" must be an array, got {type(slides).__name__}',
+                context={'current_type': type(slides).__name__},
+                suggested_fix={
+                    'action': 'convert_type',
+                    'field': 'slides',
+                    'to_type': 'array',
+                    'reasoning': 'Slides must be an array of slide objects'
+                }
+            ))
+            return errors
+
+        # Validate each slide
+        for i, slide in enumerate(slides, 1):
+            slide_errors = cls._validate_slide(slide, i)
+            errors.extend(slide_errors)
+
+        return errors
+
+    @classmethod
+    def _validate_slide(cls, slide: Dict[str, Any], slide_number: int) -> List[ValidationError]:
+        """Validate a single slide and return errors."""
+        errors = []
+        slide_type = slide.get('slide_type', 'unknown')
+
+        # Check for slide_type
+        if 'slide_type' not in slide:
+            errors.append(ValidationError(
+                slide_number=slide_number,
+                slide_type=None,
+                error_type='missing_field',
+                field='slide_type',
+                severity='error',
+                message='Missing required field "slide_type"',
+                context={'slide_path': f'slides[{slide_number - 1}]', 'current_slide': slide},
+                suggested_fix={
+                    'action': 'add_field',
+                    'field': 'slide_type',
+                    'value': 'bullet_points',
+                    'reasoning': 'Default to bullet_points if type cannot be inferred'
+                }
+            ))
+        elif slide_type not in cls.VALID_SLIDE_TYPES:
+            errors.append(ValidationError(
+                slide_number=slide_number,
+                slide_type=slide_type,
+                error_type='invalid_value',
+                field='slide_type',
+                severity='error',
+                message=f'Invalid slide_type "{slide_type}"',
+                context={
+                    'slide_path': f'slides[{slide_number - 1}]',
+                    'valid_types': sorted(cls.VALID_SLIDE_TYPES)
+                },
+                suggested_fix={
+                    'action': 'suggest_closest',
+                    'field': 'slide_type',
+                    'current': slide_type,
+                    'suggestions': cls._find_similar_slide_types(slide_type),
+                    'reasoning': 'Use closest matching valid slide type'
+                }
+            ))
+
+        # Check for title field (required for non-title slides)
+        if slide_type != 'title_slide' and 'title' not in slide:
+            # Try to infer title from content
+            inferred_title = cls._infer_title(slide, slide_number)
+            errors.append(ValidationError(
+                slide_number=slide_number,
+                slide_type=slide_type,
+                error_type='missing_field',
+                field='title',
+                severity='error',
+                message=f'Missing required field "title" at slide level (slide_type: {slide_type})',
+                context={'slide_path': f'slides[{slide_number - 1}]'},
+                suggested_fix={
+                    'action': 'add_field',
+                    'field': 'title',
+                    'value': inferred_title,
+                    'reasoning': 'Inferred from content or generated default'
+                }
+            ))
+
+        # Check for content field
+        if 'content' not in slide:
+            errors.append(ValidationError(
+                slide_number=slide_number,
+                slide_type=slide_type,
+                error_type='missing_field',
+                field='content',
+                severity='error',
+                message='Missing required field "content"',
+                context={'slide_path': f'slides[{slide_number - 1}]'},
+                suggested_fix={
+                    'action': 'add_field',
+                    'field': 'content',
+                    'value': {},
+                    'reasoning': 'Content object is required for all slides'
+                }
+            ))
+        else:
+            # Validate content structure
+            content_errors = cls._validate_content(slide.get('content', {}), slide_type, slide_number)
+            errors.extend(content_errors)
+
+        return errors
+
+    @classmethod
+    def _validate_content(cls, content: Dict[str, Any], slide_type: str,
+                         slide_number: int) -> List[ValidationError]:
+        """Validate content field and check for wrong field names."""
+        errors = []
+
+        # Check for wrong field names
+        for wrong_name, correct_name in cls.FIELD_MAPPINGS.items():
+            if wrong_name in content:
+                errors.append(ValidationError(
+                    slide_number=slide_number,
+                    slide_type=slide_type,
+                    error_type='wrong_field_name',
+                    field=wrong_name,
+                    severity='error',
+                    message=f'Field "{wrong_name}" should be "{correct_name}"',
+                    context={
+                        'slide_path': f'slides[{slide_number - 1}].content',
+                        'current_field': wrong_name,
+                        'correct_field': correct_name
+                    },
+                    suggested_fix={
+                        'action': 'rename_field',
+                        'from': wrong_name,
+                        'to': correct_name,
+                        'reasoning': f'Updated API - "{correct_name}" is the correct field name'
+                    }
+                ))
+
+        # Validate specific slide type requirements
+        if slide_type == 'chart_slide':
+            if 'data' not in content and 'chart_data' not in content:
+                errors.append(ValidationError(
+                    slide_number=slide_number,
+                    slide_type=slide_type,
+                    error_type='missing_field',
+                    field='data',
+                    severity='error',
+                    message='Chart slide missing "data" field in content',
+                    context={'slide_path': f'slides[{slide_number - 1}].content'},
+                    suggested_fix={
+                        'action': 'add_field',
+                        'field': 'data',
+                        'value': {'labels': [], 'datasets': []},
+                        'reasoning': 'Chart requires data with labels and datasets'
+                    }
+                ))
+
+        return errors
+
+    @classmethod
+    def _infer_title(cls, slide: Dict[str, Any], slide_number: int) -> str:
+        """Infer title from content or generate default."""
+        content = slide.get('content', {})
+
+        # Try to get title from content
+        if 'title' in content:
+            return content['title']
+
+        # Generate default based on slide type
+        slide_type = slide.get('slide_type', 'unknown')
+        type_titles = {
+            'bullet_points': 'Key Points',
+            'chart_slide': 'Data Chart',
+            'data_table': 'Data Table',
+            'text_image_left': 'Overview',
+            'section_header': 'Section',
+        }
+
+        if slide_type in type_titles:
+            return type_titles[slide_type]
+
+        return f'Slide {slide_number}'
+
+    @classmethod
+    def _find_similar_slide_types(cls, slide_type: str) -> List[str]:
+        """Find similar valid slide types (simple string matching)."""
+        # Simple similarity: contains substring or vice versa
+        similar = []
+        slide_type_lower = slide_type.lower()
+
+        for valid_type in cls.VALID_SLIDE_TYPES:
+            if (slide_type_lower in valid_type or
+                valid_type in slide_type_lower or
+                cls._levenshtein_distance(slide_type_lower, valid_type) <= 3):
+                similar.append(valid_type)
+
+        return similar[:3]  # Return top 3
+
+    @classmethod
+    def _levenshtein_distance(cls, s1: str, s2: str) -> int:
+        """Calculate Levenshtein distance between two strings."""
+        if len(s1) < len(s2):
+            return cls._levenshtein_distance(s2, s1)
+
+        if len(s2) == 0:
+            return len(s1)
+
+        previous_row = range(len(s2) + 1)
+        for i, c1 in enumerate(s1):
+            current_row = [i + 1]
+            for j, c2 in enumerate(s2):
+                insertions = previous_row[j + 1] + 1
+                deletions = current_row[j] + 1
+                substitutions = previous_row[j] + (c1 != c2)
+                current_row.append(min(insertions, deletions, substitutions))
+            previous_row = current_row
+
+        return previous_row[-1]
+
+    @classmethod
+    def apply_fixes(cls, data: Dict[str, Any], errors: List[ValidationError]) -> Dict[str, Any]:
+        """
+        Apply automatic fixes to JSON data.
+
+        Args:
+            data: Original JSON data
+            errors: List of errors to fix
+
+        Returns:
+            Fixed JSON data
+        """
+        import copy
+        fixed_data = copy.deepcopy(data)
+
+        # Sort errors by slide number to process in order
+        sorted_errors = sorted(errors, key=lambda e: (e.slide_number or 0, e.error_type))
+
+        for error in sorted_errors:
+            if not error.suggested_fix:
+                continue
+
+            action = error.suggested_fix.get('action')
+
+            if action == 'add_field':
+                fixed_data = cls._fix_add_field(fixed_data, error)
+            elif action == 'rename_field':
+                fixed_data = cls._fix_rename_field(fixed_data, error)
+            elif action == 'suggest_closest':
+                fixed_data = cls._fix_suggest_closest(fixed_data, error)
+
+        return fixed_data
+
+    @classmethod
+    def _fix_add_field(cls, data: Dict[str, Any], error: ValidationError) -> Dict[str, Any]:
+        """Add missing field."""
+        field = error.suggested_fix.get('field')
+        value = error.suggested_fix.get('value')
+
+        if error.slide_number is None:
+            # Top-level field
+            data[field] = value
+        else:
+            # Slide-level field
+            slide_idx = error.slide_number - 1
+            if 'slides' in data and slide_idx < len(data['slides']):
+                if error.context.get('slide_path', '').endswith('.content'):
+                    # Content field
+                    if 'content' not in data['slides'][slide_idx]:
+                        data['slides'][slide_idx]['content'] = {}
+                    data['slides'][slide_idx]['content'][field] = value
+                else:
+                    # Slide-level field
+                    data['slides'][slide_idx][field] = value
+
+        return data
+
+    @classmethod
+    def _fix_rename_field(cls, data: Dict[str, Any], error: ValidationError) -> Dict[str, Any]:
+        """Rename field from wrong name to correct name."""
+        from_field = error.suggested_fix.get('from')
+        to_field = error.suggested_fix.get('to')
+
+        if error.slide_number is not None:
+            slide_idx = error.slide_number - 1
+            if 'slides' in data and slide_idx < len(data['slides']):
+                content = data['slides'][slide_idx].get('content', {})
+                if from_field in content:
+                    content[to_field] = content.pop(from_field)
+
+        return data
+
+    @classmethod
+    def _fix_suggest_closest(cls, data: Dict[str, Any], error: ValidationError) -> Dict[str, Any]:
+        """Replace with closest valid value."""
+        field = error.suggested_fix.get('field')
+        suggestions = error.suggested_fix.get('suggestions', [])
+
+        if suggestions and error.slide_number is not None:
+            slide_idx = error.slide_number - 1
+            if 'slides' in data and slide_idx < len(data['slides']):
+                data['slides'][slide_idx][field] = suggestions[0]
+
+        return data
+
+
 class PresentationValidator:
     """Validates JSON input structure."""
-    
+
     SCHEMA = {
         "type": "object",
         "required": ["slides"],
@@ -1715,6 +2108,151 @@ def validate_json(json_path: str, config: Dict[str, Any]) -> Tuple[bool, Optiona
         return False, f"Validation error: {e}"
 
 
+def validate_json_detailed(json_path: str) -> Tuple[bool, List[ValidationError]]:
+    """
+    Perform detailed validation and return list of errors.
+
+    Args:
+        json_path (str): Path to JSON file
+
+    Returns:
+        Tuple[bool, List[ValidationError]]: (is_valid, list of errors)
+    """
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        errors = JSONFixer.validate_detailed(data)
+        return len(errors) == 0, errors
+
+    except json.JSONDecodeError as e:
+        error = ValidationError(
+            slide_number=None,
+            slide_type=None,
+            error_type='json_decode_error',
+            field=None,
+            severity='error',
+            message=f'Invalid JSON format: {e}',
+            context={'error_details': str(e)},
+            suggested_fix=None
+        )
+        return False, [error]
+    except FileNotFoundError:
+        error = ValidationError(
+            slide_number=None,
+            slide_type=None,
+            error_type='file_not_found',
+            field=None,
+            severity='error',
+            message=f'File not found: {json_path}',
+            context={'file_path': json_path},
+            suggested_fix=None
+        )
+        return False, [error]
+    except Exception as e:
+        error = ValidationError(
+            slide_number=None,
+            slide_type=None,
+            error_type='unknown_error',
+            field=None,
+            severity='error',
+            message=f'Validation error: {e}',
+            context={'error_details': str(e)},
+            suggested_fix=None
+        )
+        return False, [error]
+
+
+def generate_fix_report(json_path: str, output_path: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Generate detailed fix report for JSON file.
+
+    Args:
+        json_path (str): Path to JSON file
+        output_path (Optional[str]): Path to save report (if None, returns dict)
+
+    Returns:
+        Dict containing fix report
+    """
+    is_valid, errors = validate_json_detailed(json_path)
+
+    # Create report
+    report = {
+        'original_file': json_path,
+        'validation_status': 'passed' if is_valid else 'failed',
+        'total_errors': len(errors),
+        'errors': [error.to_dict() for error in errors],
+        'fixable_automatically': sum(1 for e in errors if e.suggested_fix),
+        'requires_manual_review': sum(1 for e in errors if not e.suggested_fix),
+        'generated_at': datetime.now().isoformat()
+    }
+
+    # Save to file if requested
+    if output_path:
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+        logger.info(f"Fix report saved to: {output_path}")
+
+    return report
+
+
+def fix_json(json_path: str, output_path: str, report_path: Optional[str] = None) -> bool:
+    """
+    Fix JSON file automatically.
+
+    Args:
+        json_path (str): Path to input JSON file
+        output_path (str): Path to save fixed JSON
+        report_path (Optional[str]): Path to save fix report
+
+    Returns:
+        bool: True if fixes were applied successfully
+    """
+    try:
+        # Load original data
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # Get detailed errors
+        is_valid, errors = validate_json_detailed(json_path)
+
+        if is_valid:
+            logger.info(f"{json_path} is already valid, no fixes needed")
+            print(f"✓ {json_path}: No fixes needed")
+            return True
+
+        # Generate report if requested
+        if report_path:
+            generate_fix_report(json_path, report_path)
+            print(f"📄 Fix report saved: {report_path}")
+
+        # Apply fixes
+        fixed_data = JSONFixer.apply_fixes(data, errors)
+
+        # Validate fixed data
+        remaining_errors = JSONFixer.validate_detailed(fixed_data)
+
+        # Save fixed data
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(fixed_data, f, indent=2, ensure_ascii=False)
+
+        # Report results
+        fixable_count = sum(1 for e in errors if e.suggested_fix)
+        print(f"✓ Fixed {fixable_count}/{len(errors)} errors")
+        print(f"💾 Fixed JSON saved: {output_path}")
+
+        if remaining_errors:
+            print(f"⚠️  {len(remaining_errors)} errors require manual review")
+            return False
+
+        return True
+
+    except Exception as e:
+        logger.error(f"Error fixing JSON: {e}")
+        print(f"✗ Error fixing {json_path}: {e}")
+        return False
+
+
 def process_single_file(input_path: str, output_path: str, config: Dict[str, Any],
                        show_progress: bool = True, validate_only: bool = False) -> bool:
     """
@@ -1831,6 +2369,18 @@ Examples:
   # Batch process multiple files
   %(prog)s --batch "presentations/*.json" --output-dir ./output
 
+  # Fix JSON errors automatically
+  %(prog)s input.json --fix --fix-output input.fixed.json
+
+  # Fix JSON in-place (overwrites original)
+  %(prog)s input.json --fix --fix-inplace
+
+  # Generate fix report only (no fixing)
+  %(prog)s input.json --fix-report fix-report.json
+
+  # Fix and generate report
+  %(prog)s input.json --fix --fix-output fixed.json --fix-report report.json
+
   # Use custom config and structured logging
   %(prog)s input.json output.pptx --config my-config.yml --log-format json
 
@@ -1858,6 +2408,17 @@ Examples:
                        help='Disable progress bars')
     parser.add_argument('--overwrite', action='store_true',
                        help='Overwrite existing output files')
+
+    # Fix-related arguments
+    parser.add_argument('--fix', action='store_true',
+                       help='Automatically fix JSON errors and save corrected version')
+    parser.add_argument('--fix-output', metavar='PATH',
+                       help='Output path for fixed JSON (default: input.fixed.json)')
+    parser.add_argument('--fix-report', metavar='PATH',
+                       help='Generate detailed fix report (JSON format)')
+    parser.add_argument('--fix-inplace', action='store_true',
+                       help='Fix JSON in-place (overwrites original file)')
+
     parser.add_argument('--version', action='version', version='json2pptx 2.0.0')
 
     args = parser.parse_args()
@@ -1874,6 +2435,43 @@ Examples:
     # Configure logging
     global logger
     logger = StructuredLogger(__name__, log_format=config['logging']['format'])
+
+    # Handle fix modes
+    if args.fix or args.fix_report or args.fix_inplace:
+        if not args.input:
+            parser.error("Input file required for fix mode")
+
+        # Determine output path for fixed JSON
+        if args.fix_inplace:
+            fix_output = args.input
+        elif args.fix_output:
+            fix_output = args.fix_output
+        else:
+            # Default: input.fixed.json
+            base_name = os.path.splitext(args.input)[0]
+            fix_output = f"{base_name}.fixed.json"
+
+        # Generate report only mode
+        if args.fix_report and not args.fix and not args.fix_inplace:
+            logger.info("Generating fix report", input=args.input)
+            report = generate_fix_report(args.input, args.fix_report)
+
+            print(f"\n📋 Fix Report Summary:")
+            print(f"  File: {args.input}")
+            print(f"  Status: {report['validation_status']}")
+            print(f"  Total errors: {report['total_errors']}")
+            print(f"  Fixable automatically: {report['fixable_automatically']}")
+            print(f"  Requires manual review: {report['requires_manual_review']}")
+            print(f"  Report saved: {args.fix_report}")
+
+            sys.exit(0 if report['validation_status'] == 'passed' else 1)
+
+        # Fix mode (with optional report)
+        if args.fix or args.fix_inplace:
+            logger.info("Fixing JSON", input=args.input, output=fix_output)
+            success = fix_json(args.input, fix_output, args.fix_report)
+
+            sys.exit(0 if success else 1)
 
     # Determine mode and validate arguments
     if args.batch:
