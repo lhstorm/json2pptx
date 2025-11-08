@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  json2pptx:
+    build: .
+    image: json2pptx:latest
+    container_name: json2pptx
+    volumes:
+      # Mount current directory for input/output
+      - ./:/workspace
+    working_dir: /workspace
+    environment:
+      - LOG_FORMAT=${LOG_FORMAT:-standard}
+    # Override command for specific operations
+    command: python pptx-generator.py --help
+
+# Usage examples:
+#
+# Build the image:
+#   docker-compose build
+#
+# Generate PPTX from JSON:
+#   docker-compose run --rm json2pptx python pptx-generator.py input.json output.pptx
+#
+# Convert PPTX to JSON:
+#   docker-compose run --rm json2pptx python pptx-reader.py input.pptx output.json
+#
+# Batch process all JSON files:
+#   docker-compose run --rm json2pptx python pptx-generator.py --batch "*.json" --output-dir ./output
+#
+# Validate JSON:
+#   docker-compose run --rm json2pptx python pptx-generator.py input.json --validate
+#
+# With custom config:
+#   docker-compose run --rm json2pptx python pptx-generator.py input.json output.pptx --config .json2pptx.yml

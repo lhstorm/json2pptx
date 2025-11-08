@@ -3,3 +3,6 @@ matplotlib
 Pillow
 pandas
 requests
+tqdm
+pyyaml
+jsonschema

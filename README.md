@@ -4,12 +4,21 @@ A powerful Python toolkit for bidirectional conversion between JSON and PowerPoi
 
 ## 🎯 Features
 
+### Core Features
 - **20+ Slide Types**: Complete support for title slides, bullet points, charts, tables, images, timelines, and more
 - **Professional Styling**: Consistent themes, fonts, colors, and layouts with customizable color schemes
 - **Native Charts**: PowerPoint-native charts (bar, line, pie, area) with proper styling and data visualization
 - **Bidirectional Conversion**: JSON → PPTX → JSON with high-fidelity round-trip conversion
 - **Comprehensive Testing**: Full test suite with round-trip validation across all slide types
 - **LLM Integration**: Optimized prompt template for generating presentations with AI
+
+### Advanced CLI Features ✨ NEW!
+- **Validation Mode**: Check JSON validity without generating presentations
+- **Batch Processing**: Convert multiple JSON files at once with glob patterns
+- **Progress Bars**: Visual feedback with tqdm for long operations
+- **Structured Logging**: JSON-formatted logs for CI/CD integration
+- **Config File Support**: YAML configuration files for default settings
+- **Docker Support**: Containerized deployment with Docker/Docker Compose
 
 ## 🚀 Quick Start
 
@@ -27,11 +36,39 @@ pip install -r requirements.txt
 # Generate PowerPoint from JSON
 python pptx-generator.py input.json output.pptx
 
-# Extract JSON from PowerPoint  
+# Extract JSON from PowerPoint
 python pptx-reader.py input.pptx output.json
 
 # Run comprehensive tests
 python -m pytest tests/ -v
+```
+
+### Advanced Usage ✨ NEW!
+
+```bash
+# Validate JSON without generating presentation
+python pptx-generator.py input.json --validate
+
+# Batch process multiple files
+python pptx-generator.py --batch "presentations/*.json" --output-dir ./output
+
+# Use custom configuration file
+python pptx-generator.py input.json output.pptx --config my-config.yml
+
+# Enable structured JSON logging (great for CI/CD)
+python pptx-generator.py input.json output.pptx --log-format json
+
+# Disable progress bars for cleaner logs
+python pptx-generator.py input.json output.pptx --no-progress
+
+# Overwrite existing files
+python pptx-generator.py input.json output.pptx --overwrite
+
+# Show version
+python pptx-generator.py --version
+
+# Get help
+python pptx-generator.py --help
 ```
 
 ## 📋 JSON Structure
@@ -402,6 +439,86 @@ Use the included `PROMPT_TEMPLATE.txt` with language models to generate properly
 - Critical JSON structure rules
 - Image URL guidelines and theme suggestions
 
+## ⚙️ Configuration File ✨ NEW!
+
+Create a `.json2pptx.yml` file in your project directory or home directory to set default options:
+
+```yaml
+# Theme configuration
+theme:
+  primary_color: '#2C3E50'
+  secondary_color: '#3498DB'
+  accent_color: '#E74C3C'
+  background_color: '#FFFFFF'
+  text_color: '#2C3E50'
+  font_family: 'Calibri'
+
+# Output configuration
+output:
+  default_directory: '.'
+  overwrite: false
+
+# Logging configuration
+logging:
+  level: 'INFO'
+  format: 'standard'  # or 'json'
+```
+
+Copy `.json2pptx.example.yml` to `.json2pptx.yml` and customize as needed.
+
+### Configuration Priority
+
+1. Command-line arguments (highest priority)
+2. Config file specified with `--config`
+3. `.json2pptx.yml` in current directory
+4. `~/.json2pptx.yml` in home directory
+5. Built-in defaults (lowest priority)
+
+## 🐳 Docker Usage ✨ NEW!
+
+### Using Docker
+
+```bash
+# Build the image
+docker build -t json2pptx .
+
+# Generate presentation
+docker run -v $(pwd):/workspace json2pptx \
+  python pptx-generator.py /workspace/input.json /workspace/output.pptx
+
+# Batch process
+docker run -v $(pwd):/workspace json2pptx \
+  python pptx-generator.py --batch "/workspace/*.json" --output-dir /workspace/output
+
+# Validate JSON
+docker run -v $(pwd):/workspace json2pptx \
+  python pptx-generator.py /workspace/input.json --validate
+```
+
+### Using Docker Compose
+
+```bash
+# Build
+docker-compose build
+
+# Generate presentation
+docker-compose run --rm json2pptx python pptx-generator.py input.json output.pptx
+
+# Batch process
+docker-compose run --rm json2pptx \
+  python pptx-generator.py --batch "*.json" --output-dir ./output
+
+# Validate
+docker-compose run --rm json2pptx python pptx-generator.py input.json --validate
+```
+
+### Benefits of Docker
+
+- No need to install Python or dependencies locally
+- Consistent environment across different systems
+- Easy CI/CD integration
+- Isolated execution
+
 ## ⚠️ Common Issues & Solutions
 
 ### JSON Structure Errors
@@ -419,15 +536,68 @@ Use the included `PROMPT_TEMPLATE.txt` with language models to generate properly
 
 ```
 json2pptx/
-├── pptx-generator.py        # Main JSON→PPTX converter
-├── pptx-reader.py          # Main PPTX→JSON converter  
-├── PROMPT_TEMPLATE.txt     # LLM prompt for JSON generation
-├── requirements.txt        # Python dependencies
-├── tests/                  # Comprehensive test suite
-│   ├── test_json/         # Working example templates
+├── pptx-generator.py           # Main JSON→PPTX converter (enhanced)
+├── pptx-reader.py              # Main PPTX→JSON converter
+├── PROMPT_TEMPLATE.txt         # LLM prompt for JSON generation
+├── requirements.txt            # Python dependencies (updated)
+├── Dockerfile                  # Docker image definition ✨ NEW!
+├── docker-compose.yml          # Docker Compose config ✨ NEW!
+├── .dockerignore               # Docker ignore patterns ✨ NEW!
+├── .json2pptx.example.yml      # Example config file ✨ NEW!
+├── tests/                      # Comprehensive test suite
+│   ├── test_json/             # Working example templates
 │   ├── test_simple_roundtrip.py
 │   └── ...
-└── README.md              # This file
+└── README.md                  # This file (updated)
+```
+
+## 🔄 CI/CD Integration ✨ NEW!
+
+### GitHub Actions Example
+
+```yaml
+name: Generate Presentations
+
+on: [push]
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate all JSON files
+        run: python pptx-generator.py --batch "presentations/*.json" --validate --log-format json
+
+      - name: Generate presentations
+        run: python pptx-generator.py --batch "presentations/*.json" --output-dir ./output --no-progress
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: presentations
+          path: output/*.pptx
+```
+
+### Using Docker in CI/CD
+
+```yaml
+# Using pre-built Docker image
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    container: json2pptx:latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: python pptx-generator.py --batch "*.json" --output-dir ./output --log-format json
 ```
 
 ## 🤝 Contributing

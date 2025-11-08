@@ -20,17 +20,31 @@ import json
 import sys
 import os
 import logging
+import argparse
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple, Union
 from io import BytesIO
 import requests
 from pathlib import Path
+import glob as file_glob
 
 try:
     import jsonschema
     HAS_JSONSCHEMA = True
 except ImportError:
     HAS_JSONSCHEMA = False
+
+try:
+    from tqdm import tqdm
+    HAS_TQDM = True
+except ImportError:
+    HAS_TQDM = False
+
+try:
+    import yaml
+    HAS_YAML = True
+except ImportError:
+    HAS_YAML = False
 
 from pptx import Presentation
 from pptx.util import Inches, Pt, Cm
@@ -43,9 +57,140 @@ from pptx.enum.dml import MSO_THEME_COLOR
 from pptx.oxml.xmlchemy import OxmlElement
 # from pptx.enum.table import MSO_VERTICAL_ALIGNMENT  # Not available in all versions
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Configure logging (will be reconfigured based on args)
 logger = logging.getLogger(__name__)
+
+
+class StructuredLogger:
+    """Logger that supports both standard and JSON output."""
+
+    def __init__(self, name: str, log_format: str = 'standard'):
+        self.logger = logging.getLogger(name)
+        self.log_format = log_format
+
+        # Remove existing handlers
+        for handler in self.logger.handlers[:]:
+            self.logger.removeHandler(handler)
+
+        handler = logging.StreamHandler()
+
+        if log_format == 'json':
+            handler.setFormatter(JsonFormatter())
+        else:
+            handler.setFormatter(
+                logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+            )
+
+        self.logger.addHandler(handler)
+        self.logger.setLevel(logging.INFO)
+
+    def info(self, message: str, **kwargs):
+        if self.log_format == 'json':
+            self.logger.info(json.dumps({'level': 'info', 'message': message, **kwargs}))
+        else:
+            self.logger.info(message)
+
+    def error(self, message: str, **kwargs):
+        if self.log_format == 'json':
+            self.logger.error(json.dumps({'level': 'error', 'message': message, **kwargs}))
+        else:
+            self.logger.error(message)
+
+    def warning(self, message: str, **kwargs):
+        if self.log_format == 'json':
+            self.logger.warning(json.dumps({'level': 'warning', 'message': message, **kwargs}))
+        else:
+            self.logger.warning(message)
+
+    def debug(self, message: str, **kwargs):
+        if self.log_format == 'json':
+            self.logger.debug(json.dumps({'level': 'debug', 'message': message, **kwargs}))
+        else:
+            self.logger.debug(message)
+
+
+class JsonFormatter(logging.Formatter):
+    """JSON formatter for structured logging."""
+
+    def format(self, record):
+        log_data = {
+            'timestamp': datetime.now().isoformat(),
+            'level': record.levelname,
+            'message': record.getMessage(),
+            'module': record.module,
+            'function': record.funcName,
+            'line': record.lineno
+        }
+        return json.dumps(log_data)
+
+
+class ConfigLoader:
+    """Load configuration from YAML file."""
+
+    DEFAULT_CONFIG = {
+        'theme': {
+            'primary_color': '#2C3E50',
+            'secondary_color': '#3498DB',
+            'accent_color': '#E74C3C',
+            'background_color': '#FFFFFF',
+            'text_color': '#2C3E50',
+            'font_family': 'Calibri'
+        },
+        'output': {
+            'default_directory': '.',
+            'overwrite': False
+        },
+        'logging': {
+            'level': 'INFO',
+            'format': 'standard'
+        }
+    }
+
+    @classmethod
+    def load(cls, config_path: Optional[str] = None) -> Dict[str, Any]:
+        """Load configuration from file or use defaults."""
+        config = cls.DEFAULT_CONFIG.copy()
+
+        if not HAS_YAML:
+            logger.warning("PyYAML not installed, using default config")
+            return config
+
+        # Try to load from specified path or default locations
+        paths_to_try = []
+        if config_path:
+            paths_to_try.append(config_path)
+        paths_to_try.extend([
+            '.json2pptx.yml',
+            '.json2pptx.yaml',
+            os.path.expanduser('~/.json2pptx.yml'),
+            os.path.expanduser('~/.json2pptx.yaml')
+        ])
+
+        for path in paths_to_try:
+            if os.path.exists(path):
+                try:
+                    with open(path, 'r') as f:
+                        user_config = yaml.safe_load(f)
+                        if user_config:
+                            # Deep merge configs
+                            config = cls._merge_configs(config, user_config)
+                            logger.info(f"Loaded configuration from: {path}")
+                            break
+                except Exception as e:
+                    logger.warning(f"Error loading config from {path}: {e}")
+
+        return config
+
+    @classmethod
+    def _merge_configs(cls, base: Dict, override: Dict) -> Dict:
+        """Deep merge two configuration dictionaries."""
+        result = base.copy()
+        for key, value in override.items():
+            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = cls._merge_configs(result[key], value)
+            else:
+                result[key] = value
+        return result
 
 
 class PresentationConstants:
@@ -157,19 +302,21 @@ class EnhancedPresentationGenerator:
         'font_family': 'Calibri'
     }
     
-    def __init__(self, json_file_path: str):
+    def __init__(self, json_file_path: str, show_progress: bool = True):
         """
         Initialize the presentation generator with JSON data.
-        
+
         Args:
             json_file_path (str): Path to the JSON file containing presentation data
+            show_progress (bool): Whether to show progress bars
         """
         self.json_data = self._load_and_validate_json(json_file_path)
         self.prs = Presentation()
         self.theme = self.json_data.get('presentation_metadata', {}).get('theme', self.DEFAULT_THEME)
         self._cached_colors = {}
         self._cached_fonts = {}
-        
+        self.show_progress = show_progress and HAS_TQDM
+
         logger.info(f"Initialized presentation generator with {len(self.json_data.get('slides', []))} slides")
     
     def _load_and_validate_json(self, json_file_path: str) -> Dict[str, Any]:
@@ -1459,18 +1606,27 @@ class EnhancedPresentationGenerator:
     def generate_presentation(self, output_path: str) -> None:
         """
         Generate the complete presentation and save to file.
-        
+
         Args:
             output_path (str): Path where the presentation should be saved
         """
         try:
             logger.info("Starting presentation generation...")
-            
+
+            slides = self.json_data.get('slides', [])
+
+            # Create iterator with or without progress bar
+            if self.show_progress:
+                slide_iterator = tqdm(enumerate(slides, 1), total=len(slides), desc="Generating slides")
+            else:
+                slide_iterator = enumerate(slides, 1)
+
             # Process each slide
-            for i, slide_data in enumerate(self.json_data.get('slides', []), 1):
+            for i, slide_data in slide_iterator:
                 slide_type = slide_data.get('slide_type')
-                logger.info(f"Processing slide {i}: {slide_type}")
-                
+                if not self.show_progress:
+                    logger.info(f"Processing slide {i}: {slide_type}")
+
                 # Route to appropriate slide creation method
                 slide_creators = {
                     'title_slide': self._add_title_slide,
@@ -1521,23 +1677,239 @@ class EnhancedPresentationGenerator:
             raise
 
 
-def main():
-    """Main function to run the enhanced presentation generator."""
-    if len(sys.argv) != 3:
-        print("Usage: python pptx-generator-improved.py input.json output.pptx")
-        sys.exit(1)
-    
-    input_file = sys.argv[1]
-    output_file = sys.argv[2]
-    
+def validate_json(json_path: str, config: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+    """
+    Validate JSON without generating presentation.
+
+    Args:
+        json_path (str): Path to JSON file
+        config (Dict[str, Any]): Configuration dictionary
+
+    Returns:
+        Tuple[bool, Optional[str]]: (is_valid, error_message)
+    """
     try:
-        generator = EnhancedPresentationGenerator(input_file)
-        generator.generate_presentation(output_file)
-        print(f"✓ Presentation generated successfully: {output_file}")
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # Validate against schema
+        if HAS_JSONSCHEMA and PresentationValidator.validate(data):
+            return True, None
+        elif not HAS_JSONSCHEMA:
+            # Basic validation without schema
+            if 'slides' not in data:
+                return False, "Missing 'slides' key in JSON"
+            if not isinstance(data['slides'], list):
+                return False, "'slides' must be an array"
+            if len(data['slides']) == 0:
+                return False, "No slides found in JSON"
+            return True, None
+        else:
+            return False, "JSON validation failed"
+
+    except json.JSONDecodeError as e:
+        return False, f"Invalid JSON format: {e}"
+    except FileNotFoundError:
+        return False, f"File not found: {json_path}"
     except Exception as e:
-        logger.error(f"Failed to generate presentation: {e}")
-        print(f"✗ Error: {e}")
-        sys.exit(1)
+        return False, f"Validation error: {e}"
+
+
+def process_single_file(input_path: str, output_path: str, config: Dict[str, Any],
+                       show_progress: bool = True, validate_only: bool = False) -> bool:
+    """
+    Process a single JSON file to PPTX.
+
+    Args:
+        input_path (str): Input JSON file path
+        output_path (str): Output PPTX file path
+        config (Dict[str, Any]): Configuration dictionary
+        show_progress (bool): Show progress bars
+        validate_only (bool): Only validate, don't generate
+
+    Returns:
+        bool: Success status
+    """
+    try:
+        # Validate JSON
+        is_valid, error_msg = validate_json(input_path, config)
+
+        if not is_valid:
+            logger.error(f"Validation failed for {input_path}: {error_msg}")
+            print(f"✗ {input_path}: {error_msg}")
+            return False
+
+        if validate_only:
+            print(f"✓ {input_path}: Valid")
+            return True
+
+        # Check if output file exists
+        if os.path.exists(output_path) and not config.get('output', {}).get('overwrite', False):
+            logger.warning(f"Output file exists: {output_path}. Use --overwrite to replace.")
+            print(f"⚠ {output_path} already exists. Use --overwrite to replace.")
+            return False
+
+        # Generate presentation
+        generator = EnhancedPresentationGenerator(input_path, show_progress=show_progress)
+        generator.generate_presentation(output_path)
+        print(f"✓ {output_path}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Error processing {input_path}: {e}")
+        print(f"✗ {input_path}: {e}")
+        return False
+
+
+def process_batch(pattern: str, output_dir: str, config: Dict[str, Any],
+                 show_progress: bool = True, validate_only: bool = False) -> Dict[str, int]:
+    """
+    Process multiple JSON files matching a pattern.
+
+    Args:
+        pattern (str): File glob pattern (e.g., "*.json")
+        output_dir (str): Output directory for PPTX files
+        config (Dict[str, Any]): Configuration dictionary
+        show_progress (bool): Show progress bars
+        validate_only (bool): Only validate, don't generate
+
+    Returns:
+        Dict[str, int]: Statistics (success, failed counts)
+    """
+    # Find matching files
+    files = file_glob.glob(pattern)
+
+    if not files:
+        logger.error(f"No files found matching pattern: {pattern}")
+        print(f"✗ No files found matching: {pattern}")
+        return {'success': 0, 'failed': 0}
+
+    # Create output directory if needed
+    if not validate_only and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    stats = {'success': 0, 'failed': 0}
+
+    # Process files with optional progress bar
+    file_iterator = tqdm(files, desc="Processing files") if show_progress and HAS_TQDM else files
+
+    for input_path in file_iterator:
+        if not validate_only:
+            # Generate output filename
+            base_name = os.path.splitext(os.path.basename(input_path))[0]
+            output_path = os.path.join(output_dir, f"{base_name}.pptx")
+        else:
+            output_path = None
+
+        # Process file (without individual progress bars to avoid clutter)
+        success = process_single_file(
+            input_path, output_path, config,
+            show_progress=False, validate_only=validate_only
+        )
+
+        if success:
+            stats['success'] += 1
+        else:
+            stats['failed'] += 1
+
+    return stats
+
+
+def main():
+    """Main function with full argument parsing support."""
+    parser = argparse.ArgumentParser(
+        description='Enhanced PowerPoint Generator - Convert JSON to PPTX',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Generate single presentation
+  %(prog)s input.json output.pptx
+
+  # Validate JSON without generating
+  %(prog)s input.json --validate
+
+  # Batch process multiple files
+  %(prog)s --batch "presentations/*.json" --output-dir ./output
+
+  # Use custom config and structured logging
+  %(prog)s input.json output.pptx --config my-config.yml --log-format json
+
+  # Disable progress bars
+  %(prog)s input.json output.pptx --no-progress
+        """
+    )
+
+    # Positional arguments
+    parser.add_argument('input', nargs='?', help='Input JSON file or glob pattern (for batch mode)')
+    parser.add_argument('output', nargs='?', help='Output PPTX file (not used in batch mode)')
+
+    # Optional arguments
+    parser.add_argument('--validate', action='store_true',
+                       help='Validate JSON without generating presentation')
+    parser.add_argument('--batch', action='store_true',
+                       help='Batch mode: process multiple files matching input pattern')
+    parser.add_argument('--output-dir', default='.',
+                       help='Output directory for batch mode (default: current directory)')
+    parser.add_argument('--config', metavar='PATH',
+                       help='Path to configuration file (.json2pptx.yml)')
+    parser.add_argument('--log-format', choices=['standard', 'json'], default='standard',
+                       help='Log output format (default: standard)')
+    parser.add_argument('--no-progress', action='store_true',
+                       help='Disable progress bars')
+    parser.add_argument('--overwrite', action='store_true',
+                       help='Overwrite existing output files')
+    parser.add_argument('--version', action='version', version='json2pptx 2.0.0')
+
+    args = parser.parse_args()
+
+    # Load configuration
+    config = ConfigLoader.load(args.config)
+
+    # Override config with command-line arguments
+    if args.overwrite:
+        config['output']['overwrite'] = True
+    if args.log_format:
+        config['logging']['format'] = args.log_format
+
+    # Configure logging
+    global logger
+    logger = StructuredLogger(__name__, log_format=config['logging']['format'])
+
+    # Determine mode and validate arguments
+    if args.batch:
+        # Batch mode
+        if not args.input:
+            parser.error("Input pattern required for batch mode")
+
+        logger.info("Running in batch mode", pattern=args.input)
+        stats = process_batch(
+            args.input, args.output_dir, config,
+            show_progress=not args.no_progress,
+            validate_only=args.validate
+        )
+
+        print(f"\nBatch processing complete:")
+        print(f"  Success: {stats['success']}")
+        print(f"  Failed:  {stats['failed']}")
+        sys.exit(0 if stats['failed'] == 0 else 1)
+
+    else:
+        # Single file mode
+        if not args.input:
+            parser.print_help()
+            sys.exit(1)
+
+        if not args.validate and not args.output:
+            parser.error("Output file required (or use --validate)")
+
+        logger.info("Processing single file", input=args.input)
+        success = process_single_file(
+            args.input, args.output, config,
+            show_progress=not args.no_progress,
+            validate_only=args.validate
+        )
+
+        sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":
