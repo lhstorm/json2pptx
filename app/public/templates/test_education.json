@@ -1,0 +1,429 @@
+{
+  "presentation_metadata": {
+    "title": "Introduction to Data Science",
+    "author": "Prof. Maria Rodriguez",
+    "date": "2024-12-20",
+    "theme": {
+      "primary_color": "#4A148C",
+      "secondary_color": "#7B1FA2",
+      "accent_color": "#FF6F00",
+      "background_color": "#FAFAFA",
+      "text_color": "#212121",
+      "font_family": "Georgia"
+    }
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_type": "title_slide",
+      "content": {
+        "title": "Introduction to Data Science",
+        "subtitle": "Fundamentals, Tools, and Applications",
+        "author": "Prof. Maria Rodriguez, PhD",
+        "date": "Fall Semester 2024"
+      },
+      "speaker_notes": "Welcome to Introduction to Data Science. This course will provide you with foundational knowledge and practical skills.",
+      "transition": "fade",
+      "duration": 25
+    },
+    {
+      "slide_number": 2,
+      "slide_type": "section_header",
+      "content": {
+        "title": "Course Overview",
+        "subtitle": "What You'll Learn This Semester"
+      },
+      "speaker_notes": "Let's begin with an overview of what we'll cover in this course.",
+      "transition": "slide",
+      "duration": 15
+    },
+    {
+      "slide_number": 3,
+      "slide_type": "numbered_list",
+      "content": {
+        "title": "Course Learning Objectives",
+        "items": [
+          {"text": "Understand fundamental concepts of data science", "level": 0},
+          {"text": "Master Python programming for data analysis", "level": 0},
+          {"text": "Learn statistical methods and machine learning basics", "level": 0},
+          {"text": "Develop skills in data visualization and storytelling", "level": 0},
+          {"text": "Complete real-world projects using industry tools", "level": 0},
+          {"text": "Build a portfolio of data science projects", "level": 0},
+          {"text": "Understand ethical implications of data science", "level": 0},
+          {"text": "Prepare for careers in data science field", "level": 0}
+        ]
+      },
+      "speaker_notes": "By the end of this course, you'll have a solid foundation in all these areas.",
+      "transition": "fade",
+      "duration": 40
+    },
+    {
+      "slide_number": 4,
+      "slide_type": "content_single",
+      "content": {
+        "title": "What is Data Science?",
+        "text": "Data Science is an interdisciplinary field that uses scientific methods, processes, algorithms, and systems to extract knowledge and insights from structured and unstructured data.\n\nIt combines multiple fields including:\n• Statistics and Mathematics\n• Computer Science and Programming\n• Domain Expertise\n• Data Visualization\n• Machine Learning and AI\n\nData scientists solve complex problems by analyzing large amounts of data to identify patterns, make predictions, and drive decision-making."
+      },
+      "speaker_notes": "Data science sits at the intersection of multiple disciplines.",
+      "transition": "slide",
+      "duration": 35
+    },
+    {
+      "slide_number": 5,
+      "slide_type": "text_image_right",
+      "content": {
+        "title": "The Data Science Process",
+        "text": "The typical data science workflow:\n\n1. Problem Definition\n   - Understanding business needs\n   - Defining success metrics\n\n2. Data Collection\n   - Identifying data sources\n   - Gathering relevant data\n\n3. Data Cleaning\n   - Handling missing values\n   - Removing outliers\n\n4. Exploratory Analysis\n   - Statistical summaries\n   - Pattern identification",
+        "image": "https://picsum.photos/800/600?random=301"
+      },
+      "speaker_notes": "This process is iterative - you'll often go back to earlier steps.",
+      "transition": "fade",
+      "duration": 40
+    },
+    {
+      "slide_number": 6,
+      "slide_type": "process_flow",
+      "content": {
+        "title": "Machine Learning Pipeline",
+        "steps": [
+          {"text": "Data Input"},
+          {"text": "Feature Engineering"},
+          {"text": "Model Training"},
+          {"text": "Validation"},
+          {"text": "Testing"},
+          {"text": "Deployment"}
+        ]
+      },
+      "speaker_notes": "Each step in the ML pipeline is crucial for model success.",
+      "transition": "slide",
+      "duration": 30
+    },
+    {
+      "slide_number": 7,
+      "slide_type": "bullet_points",
+      "content": {
+        "title": "Essential Python Libraries",
+        "points": [
+          {"text": "NumPy", "level": 0},
+          {"text": "Numerical computing foundation", "level": 1},
+          {"text": "Array operations and mathematics", "level": 1},
+          {"text": "Pandas", "level": 0},
+          {"text": "Data manipulation and analysis", "level": 1},
+          {"text": "DataFrames for structured data", "level": 1},
+          {"text": "Scikit-learn", "level": 0},
+          {"text": "Machine learning algorithms", "level": 1},
+          {"text": "Model evaluation tools", "level": 1},
+          {"text": "Matplotlib & Seaborn", "level": 0},
+          {"text": "Data visualization", "level": 1}
+        ]
+      },
+      "speaker_notes": "We'll be using these libraries extensively throughout the course.",
+      "transition": "fade",
+      "duration": 45
+    },
+    {
+      "slide_number": 8,
+      "slide_type": "data_table",
+      "content": {
+        "title": "Common Data Types and Structures",
+        "headers": ["Data Type", "Description", "Example", "Python Type"],
+        "rows": [
+          ["Numerical", "Quantitative values", "Age, Temperature", "int, float"],
+          ["Categorical", "Discrete groups", "Color, Gender", "str, category"],
+          ["Boolean", "True/False values", "Is_Student", "bool"],
+          ["DateTime", "Temporal data", "2024-12-20", "datetime"],
+          ["Text", "Unstructured strings", "Reviews, Comments", "str"],
+          ["Geospatial", "Location data", "Coordinates", "tuple, geoJSON"]
+        ],
+        "style": "striped"
+      },
+      "speaker_notes": "Understanding data types is fundamental for proper analysis.",
+      "transition": "slide",
+      "duration": 35
+    },
+    {
+      "slide_number": 9,
+      "slide_type": "chart_slide",
+      "content": {
+        "title": "Distribution of Data Science Jobs by Industry",
+        "chart_type": "pie",
+        "data": {
+          "labels": ["Technology", "Finance", "Healthcare", "Retail", "Manufacturing", "Others"],
+          "datasets": [
+            {
+              "name": "Industry Distribution",
+              "values": [35, 20, 15, 12, 10, 8]
+            }
+          ]
+        },
+        "options": {
+          "show_legend": true,
+          "show_grid": false
+        }
+      },
+      "speaker_notes": "Technology and finance sectors employ the most data scientists.",
+      "transition": "fade",
+      "duration": 30
+    },
+    {
+      "slide_number": 10,
+      "slide_type": "comparison_table",
+      "content": {
+        "title": "Traditional Analytics vs. Data Science",
+        "items": [
+          {"name": "Traditional Analytics"},
+          {"name": "Data Science"}
+        ],
+        "criteria": [
+          {
+            "name": "Data Volume",
+            "values": ["Small to Medium", "Medium to Big Data"]
+          },
+          {
+            "name": "Methods",
+            "values": ["Descriptive Statistics", "ML & AI Algorithms"]
+          },
+          {
+            "name": "Tools",
+            "values": ["Excel, SQL", "Python, R, Spark"]
+          },
+          {
+            "name": "Focus",
+            "values": ["What happened?", "What will happen?"]
+          },
+          {
+            "name": "Complexity",
+            "values": ["Structured queries", "Complex models"]
+          }
+        ]
+      },
+      "speaker_notes": "Data science extends traditional analytics with predictive capabilities.",
+      "transition": "slide",
+      "duration": 40
+    },
+    {
+      "slide_number": 11,
+      "slide_type": "text_image_left",
+      "content": {
+        "title": "Statistical Foundations",
+        "text": "Key statistical concepts:\n\n• Descriptive Statistics\n  - Mean, Median, Mode\n  - Standard Deviation\n  - Percentiles\n\n• Probability Distributions\n  - Normal Distribution\n  - Binomial Distribution\n  - Poisson Distribution\n\n• Hypothesis Testing\n  - p-values\n  - Confidence Intervals\n  - Type I & II Errors",
+        "image": "https://picsum.photos/800/600?random=302"
+      },
+      "speaker_notes": "Statistics forms the mathematical foundation of data science.",
+      "transition": "fade",
+      "duration": 35
+    },
+    {
+      "slide_number": 12,
+      "slide_type": "chart_slide",
+      "content": {
+        "title": "Model Accuracy Comparison",
+        "chart_type": "bar",
+        "data": {
+          "labels": ["Linear Regression", "Decision Tree", "Random Forest", "Neural Network", "SVM"],
+          "datasets": [
+            {
+              "name": "Training Accuracy",
+              "values": [75, 85, 92, 94, 88]
+            },
+            {
+              "name": "Test Accuracy",
+              "values": [73, 78, 89, 91, 86]
+            }
+          ]
+        },
+        "options": {
+          "show_legend": true,
+          "show_grid": true
+        }
+      },
+      "speaker_notes": "Notice how some models may overfit - higher training than test accuracy.",
+      "transition": "slide",
+      "duration": 30
+    },
+    {
+      "slide_number": 13,
+      "slide_type": "content_two_column",
+      "content": {
+        "title": "Supervised vs Unsupervised Learning",
+        "left_column": "SUPERVISED LEARNING:\n\n• Uses labeled data\n• Predicts specific outcomes\n• Examples:\n  - Classification\n  - Regression\n• Algorithms:\n  - Linear Regression\n  - Decision Trees\n  - Neural Networks\n• Use Cases:\n  - Spam detection\n  - Price prediction",
+        "right_column": "UNSUPERVISED LEARNING:\n\n• Uses unlabeled data\n• Finds hidden patterns\n• Examples:\n  - Clustering\n  - Dimensionality reduction\n• Algorithms:\n  - K-Means\n  - PCA\n  - DBSCAN\n• Use Cases:\n  - Customer segmentation\n  - Anomaly detection"
+      },
+      "speaker_notes": "Both approaches have their strengths depending on your data and goals.",
+      "transition": "fade",
+      "duration": 40
+    },
+    {
+      "slide_number": 14,
+      "slide_type": "timeline",
+      "content": {
+        "title": "Evolution of Data Science",
+        "events": [
+          {
+            "date": "1960s",
+            "title": "Statistics Era",
+            "description": "Foundation of statistical computing"
+          },
+          {
+            "date": "1990s",
+            "title": "Data Mining",
+            "description": "KDD and pattern discovery"
+          },
+          {
+            "date": "2000s",
+            "title": "Big Data",
+            "description": "Hadoop and distributed computing"
+          },
+          {
+            "date": "2010s",
+            "title": "Deep Learning",
+            "description": "Neural networks revolution"
+          },
+          {
+            "date": "2020s",
+            "title": "AutoML & AI",
+            "description": "Automated and ethical AI"
+          }
+        ]
+      },
+      "speaker_notes": "The field has evolved rapidly, especially in the last decade.",
+      "transition": "slide",
+      "duration": 35
+    },
+    {
+      "slide_number": 15,
+      "slide_type": "icon_points",
+      "content": {
+        "title": "Essential Skills for Data Scientists",
+        "points": [
+          {"text": "Programming\nPython, R, SQL", "icon": "code"},
+          {"text": "Mathematics\nStatistics, Linear Algebra", "icon": "calculator"},
+          {"text": "Communication\nVisualization, Storytelling", "icon": "chat"},
+          {"text": "Business Acumen\nDomain Knowledge", "icon": "briefcase"},
+          {"text": "Critical Thinking\nProblem Solving", "icon": "brain"},
+          {"text": "Continuous Learning\nStaying Updated", "icon": "book"}
+        ]
+      },
+      "speaker_notes": "Success in data science requires a combination of technical and soft skills.",
+      "transition": "fade",
+      "duration": 35
+    },
+    {
+      "slide_number": 16,
+      "slide_type": "quote_slide",
+      "content": {
+        "quote": "In God we trust. All others must bring data.",
+        "attribution": "W. Edwards Deming, Statistician"
+      },
+      "speaker_notes": "This quote emphasizes the importance of data-driven decision making.",
+      "transition": "slide",
+      "duration": 20
+    },
+    {
+      "slide_number": 17,
+      "slide_type": "content_three_column",
+      "content": {
+        "title": "Data Science Project Lifecycle",
+        "left_column": "PLANNING:\n\n• Define objectives\n• Identify stakeholders\n• Set success metrics\n• Create timeline\n• Allocate resources",
+        "middle_column": "EXECUTION:\n\n• Collect data\n• Clean & preprocess\n• Feature engineering\n• Model development\n• Validation testing",
+        "right_column": "DELIVERY:\n\n• Document findings\n• Create visualizations\n• Present results\n• Deploy solution\n• Monitor performance"
+      },
+      "speaker_notes": "Each phase is critical for project success.",
+      "transition": "fade",
+      "duration": 35
+    },
+    {
+      "slide_number": 18,
+      "slide_type": "chart_slide",
+      "content": {
+        "title": "Data Science Salaries by Experience Level",
+        "chart_type": "area",
+        "data": {
+          "labels": ["Entry", "Junior", "Mid", "Senior", "Lead", "Principal"],
+          "datasets": [
+            {
+              "name": "Base Salary ($K)",
+              "values": [75, 95, 120, 145, 175, 210]
+            },
+            {
+              "name": "Total Comp ($K)",
+              "values": [85, 115, 150, 190, 240, 300]
+            }
+          ]
+        },
+        "options": {
+          "show_legend": true,
+          "show_grid": true
+        }
+      },
+      "speaker_notes": "Data science offers excellent career progression and compensation.",
+      "transition": "slide",
+      "duration": 30
+    },
+    {
+      "slide_number": 19,
+      "slide_type": "image_full",
+      "content": {
+        "image": "https://picsum.photos/1920/1080?random=303",
+        "overlay_text": "Data is the New Oil"
+      },
+      "speaker_notes": "This metaphor highlights the value of data in the modern economy.",
+      "transition": "fade",
+      "duration": 20
+    },
+    {
+      "slide_number": 20,
+      "slide_type": "team_slide",
+      "content": {
+        "title": "Course Teaching Team",
+        "members": [
+          {
+            "name": "Prof. Maria Rodriguez",
+            "role": "Lead Instructor"
+          },
+          {
+            "name": "Dr. James Chen",
+            "role": "Co-Instructor"
+          },
+          {
+            "name": "Sarah Johnson",
+            "role": "Teaching Assistant"
+          },
+          {
+            "name": "Mark Williams",
+            "role": "Lab Instructor"
+          }
+        ]
+      },
+      "speaker_notes": "Our teaching team is here to support your learning journey.",
+      "transition": "slide",
+      "duration": 25
+    },
+    {
+      "slide_number": 21,
+      "slide_type": "contact_slide",
+      "content": {
+        "title": "Course Information",
+        "name": "Prof. Maria Rodriguez",
+        "email": "mrodriguez@university.edu",
+        "phone": "Office Hours: MW 2-4 PM",
+        "website": "canvas.university.edu/datasci101",
+        "address": "Room 305, Computer Science Building"
+      },
+      "speaker_notes": "Don't hesitate to reach out if you need help.",
+      "transition": "fade",
+      "duration": 20
+    },
+    {
+      "slide_number": 22,
+      "slide_type": "thank_you",
+      "content": {
+        "title": "Let's Start Your Data Science Journey!",
+        "subtitle": "Questions?"
+      },
+      "speaker_notes": "I'm excited to embark on this learning journey with you all.",
+      "transition": "fade",
+      "duration": 25
+    }
+  ]
+}

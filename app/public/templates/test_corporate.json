@@ -1,0 +1,462 @@
+{
+  "presentation_metadata": {
+    "title": "Q4 2024 Business Review & Strategic Planning",
+    "author": "John Anderson, CEO",
+    "date": "2024-12-20",
+    "theme": {
+      "primary_color": "#2C3E50",
+      "secondary_color": "#3498DB",
+      "accent_color": "#E74C3C",
+      "background_color": "#FFFFFF",
+      "text_color": "#2C3E50",
+      "font_family": "Calibri"
+    }
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_type": "title_slide",
+      "content": {
+        "title": "Q4 2024 Business Review",
+        "subtitle": "Performance Analysis & Strategic Outlook",
+        "author": "John Anderson, CEO",
+        "date": "December 20, 2024",
+        "background_image": "https://picsum.photos/1920/1080?random=100"
+      },
+      "speaker_notes": "Welcome to our quarterly business review. Today we'll cover our Q4 performance and outline our strategic initiatives for 2025.",
+      "transition": "fade",
+      "duration": 30
+    },
+    {
+      "slide_number": 2,
+      "slide_type": "section_header",
+      "content": {
+        "title": "Executive Summary",
+        "subtitle": "Key Highlights & Achievements"
+      },
+      "speaker_notes": "Let's start with the key takeaways from this quarter.",
+      "transition": "slide",
+      "duration": 15
+    },
+    {
+      "slide_number": 3,
+      "slide_type": "icon_points",
+      "content": {
+        "title": "Q4 2024 Highlights",
+        "points": [
+          {"text": "Revenue Growth\n+32% YoY", "icon": "growth"},
+          {"text": "Customer Base\n50K+ Active Users", "icon": "users"},
+          {"text": "Market Expansion\n12 New Countries", "icon": "globe"},
+          {"text": "Product Launch\n3 New Features", "icon": "rocket"},
+          {"text": "Team Growth\n+45 Employees", "icon": "team"},
+          {"text": "NPS Score\n72 Points", "icon": "star"}
+        ]
+      },
+      "speaker_notes": "These six metrics highlight our exceptional growth this quarter.",
+      "transition": "fade",
+      "duration": 45
+    },
+    {
+      "slide_number": 4,
+      "slide_type": "data_table",
+      "content": {
+        "title": "Financial Performance Summary",
+        "headers": ["Metric", "Q4 2023", "Q4 2024", "Growth", "Target"],
+        "rows": [
+          ["Revenue ($M)", "45.2", "59.7", "+32%", "58.0"],
+          ["Gross Margin", "68%", "72%", "+4pp", "70%"],
+          ["EBITDA ($M)", "12.1", "18.4", "+52%", "17.0"],
+          ["Cash Flow ($M)", "15.3", "22.8", "+49%", "20.0"],
+          ["ARR ($M)", "180.8", "238.8", "+32%", "235.0"]
+        ],
+        "style": "striped"
+      },
+      "speaker_notes": "We've exceeded all our financial targets for Q4, with particularly strong performance in EBITDA and cash flow.",
+      "transition": "slide",
+      "duration": 40
+    },
+    {
+      "slide_number": 5,
+      "slide_type": "chart_slide",
+      "content": {
+        "title": "Revenue Growth Trend",
+        "chart_type": "line",
+        "data": {
+          "labels": ["Q1", "Q2", "Q3", "Q4"],
+          "datasets": [
+            {
+              "name": "2023 Revenue",
+              "values": [38.5, 41.2, 43.8, 45.2]
+            },
+            {
+              "name": "2024 Revenue",
+              "values": [48.7, 52.3, 56.1, 59.7]
+            },
+            {
+              "name": "2024 Target",
+              "values": [47.0, 51.0, 54.5, 58.0]
+            }
+          ]
+        },
+        "options": {
+          "show_legend": true,
+          "show_grid": true
+        }
+      },
+      "speaker_notes": "Our revenue growth has consistently exceeded targets throughout 2024.",
+      "transition": "fade",
+      "duration": 35
+    },
+    {
+      "slide_number": 6,
+      "slide_type": "chart_slide",
+      "content": {
+        "title": "Market Share Distribution",
+        "chart_type": "pie",
+        "data": {
+          "labels": ["Our Company", "Competitor A", "Competitor B", "Competitor C", "Others"],
+          "datasets": [
+            {
+              "name": "Market Share",
+              "values": [28, 24, 18, 15, 15]
+            }
+          ]
+        },
+        "options": {
+          "show_legend": true,
+          "show_grid": false
+        }
+      },
+      "speaker_notes": "We've maintained our position as market leader with 28% market share.",
+      "transition": "slide",
+      "duration": 30
+    },
+    {
+      "slide_number": 7,
+      "slide_type": "comparison_table",
+      "content": {
+        "title": "Regional Performance Comparison",
+        "items": [
+          {"name": "North America"},
+          {"name": "Europe"},
+          {"name": "Asia Pacific"},
+          {"name": "Latin America"}
+        ],
+        "criteria": [
+          {
+            "name": "Revenue ($M)",
+            "values": ["25.4", "18.2", "12.3", "3.8"]
+          },
+          {
+            "name": "Growth Rate",
+            "values": ["+28%", "+35%", "+42%", "+55%"]
+          },
+          {
+            "name": "Market Penetration",
+            "values": ["High", "Medium", "Low", "Low"]
+          },
+          {
+            "name": "Customer Satisfaction",
+            "values": ["92%", "89%", "87%", "91%"]
+          },
+          {
+            "name": "2025 Priority",
+            "values": ["Maintain", "Expand", "Accelerate", "Invest"]
+          }
+        ]
+      },
+      "speaker_notes": "While North America remains our largest market, we're seeing exceptional growth rates in emerging markets.",
+      "transition": "fade",
+      "duration": 45
+    },
+    {
+      "slide_number": 8,
+      "slide_type": "timeline",
+      "content": {
+        "title": "2024 Key Milestones",
+        "events": [
+          {
+            "date": "Q1 2024",
+            "title": "Series C Funding",
+            "description": "$50M raised"
+          },
+          {
+            "date": "Q2 2024",
+            "title": "Platform 2.0 Launch",
+            "description": "Major product upgrade"
+          },
+          {
+            "date": "Q3 2024",
+            "title": "European Expansion",
+            "description": "5 new countries"
+          },
+          {
+            "date": "Q4 2024",
+            "title": "Strategic Partnership",
+            "description": "Microsoft integration"
+          },
+          {
+            "date": "Q1 2025",
+            "title": "IPO Preparation",
+            "description": "S-1 filing planned"
+          }
+        ]
+      },
+      "speaker_notes": "This timeline shows our major achievements and what's ahead for Q1 2025.",
+      "transition": "slide",
+      "duration": 35
+    },
+    {
+      "slide_number": 9,
+      "slide_type": "process_flow",
+      "content": {
+        "title": "Customer Acquisition Process",
+        "steps": [
+          {"text": "Lead Generation"},
+          {"text": "Qualification"},
+          {"text": "Demo/Trial"},
+          {"text": "Negotiation"},
+          {"text": "Closing"},
+          {"text": "Onboarding"}
+        ]
+      },
+      "speaker_notes": "Our streamlined sales process has reduced average sales cycle by 15 days.",
+      "transition": "fade",
+      "duration": 30
+    },
+    {
+      "slide_number": 10,
+      "slide_type": "content_two_column",
+      "content": {
+        "title": "Product Development Update",
+        "left_column": "COMPLETED IN Q4:\n\n• AI-powered analytics dashboard\n• Mobile app v3.0 release\n• Enterprise SSO integration\n• Advanced reporting module\n• API v2.0 deployment\n• Performance optimization (3x faster)",
+        "right_column": "PLANNED FOR Q1 2025:\n\n• Machine learning recommendations\n• Real-time collaboration features\n• Blockchain integration pilot\n• Voice command interface\n• Advanced security features\n• Multi-language support (10 languages)"
+      },
+      "speaker_notes": "Our product team has delivered on all Q4 commitments and has an ambitious roadmap for Q1.",
+      "transition": "slide",
+      "duration": 40
+    },
+    {
+      "slide_number": 11,
+      "slide_type": "chart_slide",
+      "content": {
+        "title": "Customer Acquisition Cost vs Lifetime Value",
+        "chart_type": "bar",
+        "data": {
+          "labels": ["Q1", "Q2", "Q3", "Q4"],
+          "datasets": [
+            {
+              "name": "CAC ($)",
+              "values": [320, 295, 278, 245]
+            },
+            {
+              "name": "LTV ($)",
+              "values": [2150, 2340, 2580, 2875]
+            }
+          ]
+        },
+        "options": {
+          "show_legend": true,
+          "show_grid": true
+        }
+      },
+      "speaker_notes": "Our improving unit economics show CAC decreasing while LTV continues to grow.",
+      "transition": "fade",
+      "duration": 35
+    },
+    {
+      "slide_number": 12,
+      "slide_type": "bullet_points",
+      "content": {
+        "title": "Strategic Initiatives for 2025",
+        "points": [
+          {"text": "Geographic Expansion", "level": 0},
+          {"text": "Enter 15 new markets in APAC", "level": 1},
+          {"text": "Establish local partnerships", "level": 1},
+          {"text": "Product Innovation", "level": 0},
+          {"text": "Launch AI-powered features", "level": 1},
+          {"text": "Develop industry-specific solutions", "level": 1},
+          {"text": "Operational Excellence", "level": 0},
+          {"text": "Achieve 99.99% uptime", "level": 1},
+          {"text": "Reduce operational costs by 20%", "level": 1}
+        ]
+      },
+      "speaker_notes": "These three strategic pillars will guide our efforts in 2025.",
+      "transition": "slide",
+      "duration": 45
+    },
+    {
+      "slide_number": 13,
+      "slide_type": "quote_slide",
+      "content": {
+        "quote": "Our success is built on three pillars: exceptional people, innovative products, and unwavering customer focus.",
+        "attribution": "John Anderson, CEO"
+      },
+      "speaker_notes": "This philosophy has driven our growth and will continue to guide us.",
+      "transition": "fade",
+      "duration": 20
+    },
+    {
+      "slide_number": 14,
+      "slide_type": "team_slide",
+      "content": {
+        "title": "Leadership Team",
+        "members": [
+          {
+            "name": "John Anderson",
+            "role": "Chief Executive Officer",
+            "photo": "https://picsum.photos/200/200?random=201"
+          },
+          {
+            "name": "Sarah Chen",
+            "role": "Chief Technology Officer",
+            "photo": "https://picsum.photos/200/200?random=202"
+          },
+          {
+            "name": "Michael Roberts",
+            "role": "Chief Financial Officer",
+            "photo": "https://picsum.photos/200/200?random=203"
+          },
+          {
+            "name": "Emma Thompson",
+            "role": "Chief Marketing Officer",
+            "photo": "https://picsum.photos/200/200?random=204"
+          },
+          {
+            "name": "David Kumar",
+            "role": "Chief Product Officer",
+            "photo": "https://picsum.photos/200/200?random=205"
+          },
+          {
+            "name": "Lisa Martinez",
+            "role": "Chief People Officer",
+            "photo": "https://picsum.photos/200/200?random=206"
+          }
+        ]
+      },
+      "speaker_notes": "Our experienced leadership team brings over 150 years of combined industry experience.",
+      "transition": "slide",
+      "duration": 30
+    },
+    {
+      "slide_number": 15,
+      "slide_type": "text_image_left",
+      "content": {
+        "title": "Innovation Lab Update",
+        "text": "Our Innovation Lab has been working on breakthrough technologies:\n\n• Quantum computing applications for data processing\n• Advanced AI models for predictive analytics\n• Blockchain solutions for secure transactions\n• IoT integration for real-time monitoring\n\nThese initiatives position us at the forefront of technological advancement in our industry.",
+        "image": "https://picsum.photos/800/600?random=207"
+      },
+      "speaker_notes": "Our R&D investments are creating sustainable competitive advantages.",
+      "transition": "fade",
+      "duration": 35
+    },
+    {
+      "slide_number": 16,
+      "slide_type": "chart_slide",
+      "content": {
+        "title": "Employee Satisfaction & Retention",
+        "chart_type": "area",
+        "data": {
+          "labels": ["Jan", "Mar", "May", "Jul", "Sep", "Nov"],
+          "datasets": [
+            {
+              "name": "Employee Satisfaction %",
+              "values": [82, 84, 86, 88, 91, 93]
+            },
+            {
+              "name": "Retention Rate %",
+              "values": [88, 89, 90, 92, 94, 95]
+            }
+          ]
+        },
+        "options": {
+          "show_legend": true,
+          "show_grid": true
+        }
+      },
+      "speaker_notes": "Our focus on company culture has resulted in industry-leading retention rates.",
+      "transition": "slide",
+      "duration": 30
+    },
+    {
+      "slide_number": 17,
+      "slide_type": "numbered_list",
+      "content": {
+        "title": "Board Recommendations",
+        "items": [
+          {"text": "Accelerate international expansion timeline", "level": 0},
+          {"text": "Increase R&D budget by 25% for AI initiatives", "level": 0},
+          {"text": "Pursue strategic acquisitions in complementary markets", "level": 0},
+          {"text": "Enhance cybersecurity infrastructure", "level": 0},
+          {"text": "Develop comprehensive ESG strategy", "level": 0},
+          {"text": "Prepare for public offering in H2 2025", "level": 0}
+        ]
+      },
+      "speaker_notes": "The board has provided clear guidance for our strategic priorities.",
+      "transition": "fade",
+      "duration": 40
+    },
+    {
+      "slide_number": 18,
+      "slide_type": "content_three_column",
+      "content": {
+        "title": "2025 Financial Projections",
+        "left_column": "REVENUE\n\n• Q1: $65M\n• Q2: $72M\n• Q3: $80M\n• Q4: $88M\n\nTotal: $305M\n(+28% YoY)",
+        "middle_column": "PROFITABILITY\n\n• Gross Margin: 74%\n• EBITDA Margin: 32%\n• Net Margin: 18%\n\nEBITDA: $98M\n(+35% YoY)",
+        "right_column": "GROWTH METRICS\n\n• New Customers: 15K\n• Expansion Rate: 125%\n• Churn Rate: <5%\n\nARR Target: $350M\n(+47% YoY)"
+      },
+      "speaker_notes": "Our 2025 projections reflect continued strong growth while improving profitability.",
+      "transition": "slide",
+      "duration": 35
+    },
+    {
+      "slide_number": 19,
+      "slide_type": "text_image_right",
+      "content": {
+        "title": "Sustainability Initiatives",
+        "text": "Our commitment to sustainability:\n\n• Carbon neutral operations by 2025\n• 100% renewable energy in all offices\n• Reduced packaging waste by 75%\n• Employee volunteer program (2,000+ hours)\n• $1M donated to environmental causes\n\nWe believe responsible business practices drive long-term value creation.",
+        "image": "https://picsum.photos/800/600?random=208"
+      },
+      "speaker_notes": "ESG initiatives are becoming increasingly important to our stakeholders.",
+      "transition": "fade",
+      "duration": 30
+    },
+    {
+      "slide_number": 20,
+      "slide_type": "image_full",
+      "content": {
+        "image": "https://picsum.photos/1920/1080?random=209",
+        "overlay_text": "Building the Future Together"
+      },
+      "speaker_notes": "Our vision is to create lasting value for all stakeholders.",
+      "transition": "slide",
+      "duration": 15
+    },
+    {
+      "slide_number": 21,
+      "slide_type": "contact_slide",
+      "content": {
+        "title": "Investor Relations",
+        "name": "Michael Roberts, CFO",
+        "email": "investors@company.com",
+        "phone": "+1 (555) 987-6543",
+        "website": "www.company.com/investors",
+        "address": "100 Financial Plaza, New York, NY 10004"
+      },
+      "speaker_notes": "Please reach out to our investor relations team for any questions.",
+      "transition": "fade",
+      "duration": 20
+    },
+    {
+      "slide_number": 22,
+      "slide_type": "thank_you",
+      "content": {
+        "title": "Thank You",
+        "subtitle": "Q&A Session"
+      },
+      "speaker_notes": "Thank you for your time. I'm happy to answer any questions about our performance and outlook.",
+      "transition": "fade",
+      "duration": 30
+    }
+  ]
+}
