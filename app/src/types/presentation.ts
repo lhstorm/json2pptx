@@ -31,6 +31,7 @@ export interface PresentationData {
 
 export interface Project {
   id: string;
+  userId?: string;
   title: string;
   description?: string;
   jsonData: PresentationData;

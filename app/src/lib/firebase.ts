@@ -12,23 +12,30 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase only once
-let app: FirebaseApp;
+// Initialize Firebase only on client side
+function initializeFirebase() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  if (!getApps().length) {
+    return initializeApp(firebaseConfig);
+  }
+  return getApps()[0];
+}
+
+const app = initializeFirebase();
+
+// Initialize services only on client side
 let auth: Auth;
 let db: Firestore;
 let storage: FirebaseStorage;
 
-if (typeof window !== 'undefined') {
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    app = getApps()[0];
-  }
-
+if (typeof window !== 'undefined' && app) {
   auth = getAuth(app);
   db = getFirestore(app);
   storage = getStorage(app);
 }
 
 export { auth, db, storage };
-export default app;
+export default app as FirebaseApp;
