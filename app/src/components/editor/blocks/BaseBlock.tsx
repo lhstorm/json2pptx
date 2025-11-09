@@ -3,6 +3,8 @@
 import { Block, BlockComponentProps } from '@/types/blocks';
 import { MoreVertical, Copy, Trash2, GripVertical } from 'lucide-react';
 import { useState } from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface BaseBlockWrapperProps extends BlockComponentProps {
   children: React.ReactNode;
@@ -21,7 +23,18 @@ export default function BaseBlockWrapper({
 }: BaseBlockWrapperProps) {
   const [showMenu, setShowMenu] = useState(false);
 
-  const blockStyle = {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: block.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
     backgroundColor: block.style?.backgroundColor,
     color: block.style?.textColor,
     borderColor: block.style?.borderColor,
@@ -33,20 +46,24 @@ export default function BaseBlockWrapper({
     fontWeight: block.style?.fontWeight,
     textAlign: block.style?.textAlign,
     boxShadow: block.style?.shadow,
+    opacity: isDragging ? 0.5 : 1,
   };
 
   return (
     <div
+      ref={setNodeRef}
+      style={style}
       className={`relative group ${
         isSelected ? 'ring-2 ring-blue-500' : ''
       } ${isEditing ? 'hover:ring-2 hover:ring-gray-300' : ''}`}
-      style={blockStyle}
     >
       {/* Drag Handle & Controls */}
       {isEditing && (
         <div className="absolute -left-12 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
           {draggable && (
             <button
+              {...attributes}
+              {...listeners}
               className="p-2 bg-white border border-gray-300 rounded hover:bg-gray-50 cursor-grab active:cursor-grabbing"
               title="Drag to reorder"
             >

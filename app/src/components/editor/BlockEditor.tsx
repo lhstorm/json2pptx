@@ -4,6 +4,21 @@ import { useState } from 'react';
 import { Block, BlockType, Slide as VisualSlide } from '@/types/blocks';
 import { createDefaultBlock, getBlocksByCategory, BLOCK_REGISTRY } from '@/lib/blockRegistry';
 import { Plus, X } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 // Import block components
 import HeadingBlock from './blocks/HeadingBlock';
@@ -12,6 +27,8 @@ import ListBlock from './blocks/ListBlock';
 import QuoteBlock from './blocks/QuoteBlock';
 import ImageBlock from './blocks/ImageBlock';
 import ChartBlock from './blocks/ChartBlock';
+import CodeBlock from './blocks/CodeBlock';
+import CalloutBlock from './blocks/CalloutBlock';
 
 interface BlockEditorProps {
   slide: VisualSlide;
@@ -22,6 +39,26 @@ interface BlockEditorProps {
 export default function BlockEditor({ slide, onUpdate, isEditing }: BlockEditorProps) {
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [showBlockSelector, setShowBlockSelector] = useState(false);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = slide.blocks.findIndex((block) => block.id === active.id);
+      const newIndex = slide.blocks.findIndex((block) => block.id === over.id);
+
+      const reorderedBlocks = arrayMove(slide.blocks, oldIndex, newIndex);
+      onUpdate({ ...slide, blocks: reorderedBlocks });
+    }
+  };
 
   const handleAddBlock = (type: BlockType) => {
     const newBlock = createDefaultBlock(type);
@@ -98,6 +135,10 @@ export default function BlockEditor({ slide, onUpdate, isEditing }: BlockEditorP
         return <ImageBlock key={block.id} {...commonProps} />;
       case 'chart':
         return <ChartBlock key={block.id} {...commonProps} />;
+      case 'code':
+        return <CodeBlock key={block.id} {...commonProps} />;
+      case 'callout':
+        return <CalloutBlock key={block.id} {...commonProps} />;
       default:
         return (
           <div key={block.id} className="p-4 bg-gray-100 rounded text-gray-600">
@@ -134,14 +175,25 @@ export default function BlockEditor({ slide, onUpdate, isEditing }: BlockEditorP
             <p className="mb-4">No blocks yet. Add your first block below!</p>
           </div>
         ) : (
-          slide.blocks.map((block) => (
-            <div
-              key={block.id}
-              onClick={() => isEditing && setSelectedBlockId(block.id)}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={slide.blocks.map((b) => b.id)}
+              strategy={verticalListSortingStrategy}
             >
-              {renderBlock(block)}
-            </div>
-          ))
+              {slide.blocks.map((block) => (
+                <div
+                  key={block.id}
+                  onClick={() => isEditing && setSelectedBlockId(block.id)}
+                >
+                  {renderBlock(block)}
+                </div>
+              ))}
+            </SortableContext>
+          </DndContext>
         )}
 
         {/* Add Block Button */}
