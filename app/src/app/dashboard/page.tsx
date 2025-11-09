@@ -1,39 +1,41 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { storage } from '@/lib/storage';
-import { Project } from '@/types/presentation';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { useProjects } from '@/hooks/useProjects';
 import { formatDate } from '@/lib/utils';
+import GenerateModal from '@/components/ai/GenerateModal';
+import { storage } from '@/lib/storage';
 
 export default function Dashboard() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const { projects, loading, createProject, deleteProject: deleteFirestoreProject } = useProjects();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isClient, setIsClient] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-    loadProjects();
-  }, []);
+  // Redirect to login if not authenticated
+  if (!user && !loading) {
+    router.push('/login');
+    return null;
+  }
 
-  const loadProjects = () => {
-    const allProjects = storage.getAllProjects();
-    setProjects(allProjects.sort((a, b) => b.updatedAt - a.updatedAt));
-  };
+  const handleNewProject = async () => {
+    if (!user) return;
 
-  const handleNewProject = () => {
-    const newProject = storage.saveProject({
+    const newProject = await createProject({
       title: 'Untitled Presentation',
       description: ''
     });
-    storage.setCurrentProjectId(newProject.id);
-    window.location.href = `/editor/${newProject.id}`;
+
+    router.push(`/editor/${newProject.id}`);
   };
 
-  const handleDeleteProject = (id: string) => {
+  const handleDeleteProject = async (id: string) => {
     if (confirm('Are you sure you want to delete this project?')) {
-      storage.deleteProject(id);
-      loadProjects();
+      await deleteFirestoreProject(id);
     }
   };
 
@@ -41,16 +43,20 @@ export default function Dashboard() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
           try {
             const jsonString = event.target?.result as string;
-            const project = storage.importFromJson(jsonString, file.name.replace('.json', ''));
-            loadProjects();
-            window.location.href = `/editor/${project.id}`;
+            const jsonData = JSON.parse(jsonString);
+            const project = await createProject({
+              title: jsonData.presentation_metadata?.title || file.name.replace('.json', ''),
+              description: `Imported from ${file.name}`,
+              jsonData
+            });
+            router.push(`/editor/${project.id}`);
           } catch (error) {
             alert('Invalid JSON file');
           }
@@ -61,15 +67,21 @@ export default function Dashboard() {
     input.click();
   };
 
+  const handleExportJSON = (project: any) => {
+    storage.exportToJson(project);
+  };
+
   const filteredProjects = projects.filter(p =>
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (!isClient) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-gray-600">Loading...</div>
-    </div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
   }
 
   return (
@@ -83,20 +95,30 @@ export default function Dashboard() {
             </div>
             <span className="text-xl font-bold text-gray-900">JSON2PPTX</span>
           </Link>
-          <nav className="flex space-x-4">
-            <Link
-              href="/dashboard"
-              className="px-4 py-2 text-blue-600 font-semibold border-b-2 border-blue-600"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/templates"
-              className="px-4 py-2 text-gray-600 hover:text-gray-900"
-            >
-              Templates
-            </Link>
-          </nav>
+          <div className="flex items-center gap-4">
+            <nav className="flex space-x-4">
+              <Link
+                href="/dashboard"
+                className="px-4 py-2 text-blue-600 font-semibold border-b-2 border-blue-600"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/templates"
+                className="px-4 py-2 text-gray-600 hover:text-gray-900"
+              >
+                Templates
+              </Link>
+            </nav>
+            {user && (
+              <button
+                onClick={() => logout()}
+                className="px-4 py-2 text-gray-600 hover:text-gray-900"
+              >
+                Logout
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -109,6 +131,13 @@ export default function Dashboard() {
 
         {/* Actions */}
         <div className="mb-8 flex flex-col sm:flex-row gap-4">
+          <button
+            onClick={() => setShowGenerateModal(true)}
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+          >
+            <span className="text-xl mr-2">✨</span>
+            Generate with AI
+          </button>
           <button
             onClick={handleNewProject}
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
@@ -153,15 +182,24 @@ export default function Dashboard() {
             <p className="text-gray-600 mb-6">
               {searchQuery
                 ? 'Try a different search term'
-                : 'Create your first presentation or browse templates to get started'}
+                : 'Create your first presentation with AI or browse templates to get started'}
             </p>
             {!searchQuery && (
-              <button
-                onClick={handleNewProject}
-                className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-              >
-                Create Presentation
-              </button>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={() => setShowGenerateModal(true)}
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
+                >
+                  <span className="text-xl mr-2">✨</span>
+                  Generate with AI
+                </button>
+                <button
+                  onClick={handleNewProject}
+                  className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Create Manually
+                </button>
+              </div>
             )}
           </div>
         ) : (
@@ -201,7 +239,7 @@ export default function Dashboard() {
                       Edit
                     </Link>
                     <button
-                      onClick={() => storage.exportToJson(project)}
+                      onClick={() => handleExportJSON(project)}
                       className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                       title="Export JSON"
                     >
@@ -221,6 +259,12 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+
+      {/* AI Generate Modal */}
+      <GenerateModal
+        isOpen={showGenerateModal}
+        onClose={() => setShowGenerateModal(false)}
+      />
     </div>
   );
 }
