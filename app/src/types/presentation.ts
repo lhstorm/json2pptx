@@ -29,6 +29,15 @@ export interface PresentationData {
   slides: Slide[];
 }
 
+export interface SharingSettings {
+  isPublic: boolean;
+  shareId?: string;
+  password?: string;
+  expiresAt?: number;
+  allowComments?: boolean;
+  allowDownload?: boolean;
+}
+
 export interface Project {
   id: string;
   userId?: string;
@@ -38,6 +47,7 @@ export interface Project {
   createdAt: number;
   updatedAt: number;
   thumbnail?: string;
+  sharing?: SharingSettings;
 }
 
 export interface Settings {

@@ -13,7 +13,8 @@ import BlockEditor from '@/components/editor/BlockEditor';
 import EditorModeToggle from '@/components/editor/EditorModeToggle';
 import SlideNavigation from '@/components/editor/SlideNavigation';
 import ThemePicker from '@/components/themes/ThemePicker';
-import { Save, Download, Palette } from 'lucide-react';
+import ShareModal from '@/components/sharing/ShareModal';
+import { Save, Download, Palette, Play, Share2 } from 'lucide-react';
 
 export default function EditorPage() {
   const params = useParams();
@@ -30,6 +31,7 @@ export default function EditorPage() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [showThemePicker, setShowThemePicker] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Redirect if not authenticated
@@ -299,6 +301,22 @@ export default function EditorPage() {
               <Download className="w-4 h-4" />
               Export
             </button>
+
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors font-semibold"
+            >
+              <Share2 className="w-4 h-4" />
+              Share
+            </button>
+
+            <Link
+              href={`/present/${projectId}`}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors font-semibold"
+            >
+              <Play className="w-4 h-4" />
+              Present
+            </Link>
           </div>
         </div>
       </header>
@@ -380,6 +398,16 @@ export default function EditorPage() {
           onThemeChange={handleThemeChange}
           isOpen={showThemePicker}
           onClose={() => setShowThemePicker(false)}
+        />
+      )}
+
+      {/* Share Modal */}
+      {user && (
+        <ShareModal
+          project={project}
+          userId={user.uid}
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
         />
       )}
     </div>
