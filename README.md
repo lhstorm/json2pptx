@@ -1,42 +1,201 @@
-# JSON to PowerPoint Converter
+# JSON2PPTX - AI-Powered Presentation Platform
 
-A powerful Python toolkit for bidirectional conversion between JSON and PowerPoint presentations. Generate professional presentations from structured data or extract presentation content back to JSON format for analysis and manipulation.
+A comprehensive presentation creation platform combining a powerful Python toolkit for JSON-to-PowerPoint conversion with a modern web application featuring AI-powered content generation and visual editing.
 
-## 🎯 Features
+## 📦 Two-Part Solution
 
-- **20+ Slide Types**: Complete support for title slides, bullet points, charts, tables, images, timelines, and more
-- **Professional Styling**: Consistent themes, fonts, colors, and layouts with customizable color schemes
-- **Native Charts**: PowerPoint-native charts (bar, line, pie, area) with proper styling and data visualization
-- **Bidirectional Conversion**: JSON → PPTX → JSON with high-fidelity round-trip conversion
-- **Comprehensive Testing**: Full test suite with round-trip validation across all slide types
-- **LLM Integration**: Optimized prompt template for generating presentations with AI
+### 1. Python Library (Core Engine)
+Bidirectional JSON ↔ PowerPoint conversion toolkit with 20+ slide types
 
-## 🚀 Quick Start
+### 2. Web Application (Modern UI)
+Next.js-based presentation builder with AI generation, visual block editor, and Firebase backend
 
-### Installation
+---
+
+## 🌐 Web Application
+
+### Live Features (Sprint 1-2 Complete)
+
+**AI-Powered Generation**
+- Claude Sonnet 3.5 integration for intelligent content creation
+- LangChain agents for multi-stage generation pipeline
+- Text-to-presentation with customizable slide count and style
+- Automatic theme selection and image suggestions
+- Support for 20+ professional slide types
+
+**Visual Block Editor**
+- Notion-style block-based editing
+- 6 functional block types: Heading, Paragraph, List, Quote, Image, Chart
+- Rich text editing with TipTap
+- Data visualization with Recharts
+- Drag-and-drop infrastructure ready
+
+**Theme System**
+- 25+ professional themes across 5 categories
+  - Modern (5 themes)
+  - Professional (5 themes)
+  - Creative (5 themes)
+  - Minimal (5 themes)
+  - Bold (5 themes)
+- One-click theme application
+- Visual preview with gradients
+
+**Editor Features**
+- Visual/JSON mode toggle
+- Real-time Firebase sync
+- Slide management (add, delete, duplicate)
+- Slide navigation sidebar
+- Monaco editor for JSON editing
+- Auto-save functionality
+
+**Infrastructure**
+- Firebase Authentication (Google OAuth + Email/Password)
+- Firestore for project storage
+- Cloud Functions for AI generation
+- Real-time listeners for live updates
+- Next.js 14 with App Router
+- TypeScript + Tailwind CSS
+
+### Tech Stack
+
+**Frontend:**
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- TipTap (rich text)
+- Recharts (charts)
+- DnD Kit (drag-and-drop)
+- Lucide React (icons)
+
+**Backend:**
+- Firebase Firestore
+- Firebase Authentication
+- Firebase Cloud Functions
+- Firebase Storage
+
+**AI:**
+- Claude Sonnet 3.5 (Anthropic API)
+- LangChain for agent orchestration
+- Multi-agent architecture
+
+### Getting Started (Web App)
 
 ```bash
-git clone https://github.com/lhstorm/json2pptx.git
-cd json2pptx
-pip install -r requirements.txt
+# Navigate to web app directory
+cd app
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Add your Firebase and Anthropic API keys
+
+# Run development server
+npm run dev
+
+# Open http://localhost:3000
 ```
 
-### Basic Usage
+### Web App Structure
+
+```
+app/
+├── src/
+│   ├── app/                      # Next.js App Router pages
+│   │   ├── page.tsx             # Landing page
+│   │   ├── login/               # Authentication
+│   │   ├── dashboard/           # Project dashboard
+│   │   ├── editor/[id]/         # Visual + JSON editor
+│   │   └── api/                 # API routes
+│   ├── components/
+│   │   ├── editor/              # Block editor components
+│   │   │   ├── BlockEditor.tsx
+│   │   │   ├── blocks/          # 6 block types
+│   │   │   ├── SlideNavigation.tsx
+│   │   │   └── EditorModeToggle.tsx
+│   │   ├── themes/
+│   │   │   └── ThemePicker.tsx  # Theme selector modal
+│   │   └── ai/
+│   │       └── GenerateModal.tsx # AI generation interface
+│   ├── lib/
+│   │   ├── firebase.ts          # Firebase config
+│   │   ├── firestore.ts         # Firestore operations
+│   │   ├── blockRegistry.ts     # Block definitions
+│   │   └── themes/              # 25+ themes
+│   ├── contexts/
+│   │   └── AuthContext.tsx      # Auth provider
+│   └── types/
+│       ├── presentation.ts       # Core types
+│       └── blocks.ts            # Block system types
+├── functions/                    # Firebase Cloud Functions
+│   └── src/
+│       ├── agents/              # LangChain AI agents
+│       ├── prompts/             # AI prompts
+│       └── utils/               # Claude client
+└── public/
+    └── templates/               # Presentation templates
+```
+
+### Roadmap
+
+**✅ Sprint 1: AI Generation + Infrastructure** (Complete)
+- Firebase integration
+- Authentication
+- LangChain + Claude agents
+- AI presentation generation
+- Template system
+
+**✅ Sprint 2: Visual Editor + Rich Content** (Complete)
+- Block-based editor architecture
+- 6 functional block types
+- Theme system with 25+ themes
+- Visual/JSON mode toggle
+- Slide management
+
+**🚧 Sprint 3: Collaboration + Sharing** (In Progress)
+- Real-time collaboration
+- Comments & annotations
+- Web presentation mode
+- Public sharing links
+- Privacy settings
+
+**📋 Sprint 4: Polish + Advanced Features** (Planned)
+- Analytics dashboard
+- Third-party integrations
+- Export improvements
+- Performance optimization
+
+---
+
+## 🐍 Python Library (Core Engine)
+
+### Features
+
+- **20+ Slide Types**: Title slides, bullet points, charts, tables, images, timelines, and more
+- **Professional Styling**: Consistent themes, fonts, colors, and layouts
+- **Native Charts**: PowerPoint-native charts (bar, line, pie, area)
+- **Bidirectional Conversion**: JSON → PPTX → JSON with high-fidelity round-trip
+- **Comprehensive Testing**: Full test suite with round-trip validation
+- **LLM Integration**: Optimized prompt template for AI generation
+
+### Quick Start (Python)
 
 ```bash
+# Install dependencies
+pip install -r requirements.txt
+
 # Generate PowerPoint from JSON
 python pptx-generator.py input.json output.pptx
 
-# Extract JSON from PowerPoint  
+# Extract JSON from PowerPoint
 python pptx-reader.py input.pptx output.json
 
-# Run comprehensive tests
+# Run tests
 python -m pytest tests/ -v
 ```
 
-## 📋 JSON Structure
-
-### Required Top-Level Structure
+### JSON Structure
 
 ```json
 {
@@ -46,408 +205,158 @@ python -m pytest tests/ -v
     "date": "2024-01-01",
     "theme": {
       "primary_color": "#2C3E50",
-      "secondary_color": "#3498DB", 
+      "secondary_color": "#3498DB",
       "accent_color": "#E74C3C",
       "background_color": "#FFFFFF",
       "text_color": "#212121",
       "font_family": "Calibri"
     }
   },
-  "slides": [...]
-}
-```
-
-### Slide Structure
-
-**CRITICAL**: Every slide except `title_slide` MUST have a `"title"` field at the root level:
-
-```json
-{
-  "slide_number": 1,
-  "slide_type": "bullet_points",
-  "title": "Slide Title Here",  // REQUIRED for all non-title slides
-  "content": { /* slide-specific content */ },
-  "speaker_notes": "Optional notes",
-  "transition": "fade",
-  "duration": 30
-}
-```
-
-## 🎨 Complete Slide Type Reference
-
-### 1. Title Slide
-```json
-{
-  "slide_number": 1,
-  "slide_type": "title_slide",
-  "content": {
-    "title": "Main Presentation Title",
-    "subtitle": "Descriptive subtitle", 
-    "author": "Presenter Name and Title",
-    "date": "Month Year"
-  }
-}
-```
-
-### 2. Section Header
-```json
-{
-  "slide_number": 2,
-  "slide_type": "section_header",
-  "content": {
-    "title": "Section Title",
-    "subtitle": "Section description"
-  }
-}
-```
-
-### 3. Bullet Points
-```json
-{
-  "slide_number": 3,
-  "slide_type": "bullet_points",
-  "title": "Key Points",
-  "content": {
-    "title": "Key Points", 
-    "points": [
-      {"text": "Main point", "level": 1},
-      {"text": "Sub-point", "level": 2},
-      {"text": "Another main point", "level": 1}
-    ]
-  }
-}
-```
-
-### 4. Chart Slide
-**IMPORTANT**: Use `"data"` and `"options"` (not `"chart_data"` and `"chart_options"`):
-
-```json
-{
-  "slide_number": 4,
-  "slide_type": "chart_slide",
-  "title": "Performance Data",
-  "content": {
-    "title": "Performance Data",
-    "chart_type": "bar",
-    "data": {
-      "labels": ["Q1", "Q2", "Q3", "Q4"],
-      "datasets": [
-        {
-          "name": "Revenue",
-          "values": [100, 120, 140, 160]
-        }
-      ]
-    },
-    "options": {
-      "show_legend": true,
-      "show_grid": true
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_type": "title_slide",
+      "content": {
+        "title": "Main Title",
+        "subtitle": "Subtitle",
+        "author": "Author",
+        "date": "Date"
+      }
     }
-  }
+  ]
 }
 ```
 
-### 5. Data Table
-```json
-{
-  "slide_number": 5,
-  "slide_type": "data_table", 
-  "title": "Quarterly Metrics",
-  "content": {
-    "title": "Quarterly Metrics",
-    "headers": ["Metric", "Q1", "Q2", "Q3", "Q4"],
-    "rows": [
-      ["Revenue", "$1.2M", "$1.5M", "$1.8M", "$2.1M"],
-      ["Growth", "15%", "20%", "25%", "30%"]
-    ],
-    "style": "striped"
-  }
-}
-```
+### Supported Slide Types
 
-### 6. Comparison Table
-```json
-{
-  "slide_number": 6,
-  "slide_type": "comparison_table",
-  "title": "Solution Comparison", 
-  "content": {
-    "title": "Solution Comparison",
-    "items": [
-      {"name": "Option A"},
-      {"name": "Option B"}
-    ],
-    "criteria": [
-      {
-        "name": "Cost",
-        "values": ["$100", "$150"]
-      },
-      {
-        "name": "Performance",
-        "values": ["High", "Medium"]
-      }
-    ]
-  }
-}
-```
+1. **title_slide** - Title page with main/subtitle
+2. **section_header** - Section divider
+3. **bullet_points** - Bulleted lists with multi-level support
+4. **chart_slide** - Bar, line, pie, area charts
+5. **data_table** - Styled data tables
+6. **comparison_table** - Side-by-side comparisons
+7. **text_image_left** - Text with left-aligned image
+8. **text_image_right** - Text with right-aligned image
+9. **content_two_column** - Two-column layouts
+10. **content_three_column** - Three-column layouts
+11. **timeline** - Event timelines
+12. **process_flow** - Step-by-step processes
+13. **quote_slide** - Highlighted quotes
+14. **icon_points** - Icon-based key points
+15. **team_slide** - Team member profiles
+16. **contact_slide** - Contact information
+17. **thank_you** - Closing slide
+18. **blank_slide** - Custom content
+19. **big_number** - Large statistics
+20. **before_after** - Comparison slides
 
-### 7. Text with Image
-**IMPORTANT**: Use `"image"` field (not `"image_path"`):
+See full documentation in [Python README](#) for detailed slide specifications.
 
-```json
-{
-  "slide_number": 7,
-  "slide_type": "text_image_left",
-  "title": "Feature Overview",
-  "content": {
-    "title": "Feature Overview",
-    "text": "Descriptive text about the features",
-    "image": "https://picsum.photos/800/600?random=tech"
-  }
-}
-```
-
-### 8. Two-Column Content
-**IMPORTANT**: Use `"left_column"` and `"right_column"` (not `"columns"` array):
-
-```json
-{
-  "slide_number": 8,
-  "slide_type": "content_two_column",
-  "title": "Challenges & Solutions",
-  "content": {
-    "title": "Challenges & Solutions",
-    "left_column": "Current challenges:\\n• Legacy systems\\n• Scale limitations",
-    "right_column": "Our solutions:\\n• Modern architecture\\n• Auto-scaling"
-  }
-}
-```
-
-### 9. Three-Column Content
-```json
-{
-  "slide_number": 9,
-  "slide_type": "content_three_column", 
-  "title": "Three-Way Breakdown",
-  "content": {
-    "title": "Three-Way Breakdown",
-    "left_column": "Research phase",
-    "middle_column": "Development phase", 
-    "right_column": "Deployment phase"
-  }
-}
-```
-
-### 10. Timeline
-```json
-{
-  "slide_number": 10,
-  "slide_type": "timeline",
-  "title": "Project Timeline",
-  "content": {
-    "title": "Project Timeline", 
-    "events": [
-      {
-        "date": "2024-Q1",
-        "title": "Project Kickoff",
-        "description": "Initial planning"
-      }
-    ]
-  }
-}
-```
-
-### 11. Process Flow  
-```json
-{
-  "slide_number": 11,
-  "slide_type": "process_flow",
-  "title": "Process Overview",
-  "content": {
-    "title": "Process Overview",
-    "steps": [
-      {"text": "Step 1"},
-      {"text": "Step 2"}, 
-      {"text": "Step 3"}
-    ]
-  }
-}
-```
-
-### 12. Quote Slide
-**IMPORTANT**: Use `"attribution"` (not `"author"`):
-
-```json
-{
-  "slide_number": 12,
-  "slide_type": "quote_slide",
-  "content": {
-    "quote": "Innovation distinguishes between a leader and a follower.",
-    "attribution": "Steve Jobs"
-  }
-}
-```
-
-### 13. Icon Points
-```json
-{
-  "slide_number": 13,
-  "slide_type": "icon_points",
-  "title": "Key Benefits",
-  "content": {
-    "title": "Key Benefits",
-    "points": [
-      {
-        "text": "Performance\\n10x faster processing", 
-        "icon": "rocket"
-      },
-      {
-        "text": "Security\\nEnterprise-grade protection",
-        "icon": "shield"
-      }
-    ]
-  }
-}
-```
-
-### 14. Team Slide
-**IMPORTANT**: Use `"photo"` field (not `"image"`):
-
-```json
-{
-  "slide_number": 14,
-  "slide_type": "team_slide", 
-  "title": "Our Team",
-  "content": {
-    "title": "Our Team",
-    "members": [
-      {
-        "name": "John Smith",
-        "role": "CEO & Founder",
-        "photo": "https://picsum.photos/200/200?random=person1"
-      }
-    ]
-  }
-}
-```
-
-### 15. Contact Slide
-```json
-{
-  "slide_number": 15,
-  "slide_type": "contact_slide",
-  "content": {
-    "title": "Get In Touch",
-    "name": "Company Representative",
-    "email": "contact@company.com",
-    "phone": "+1 (555) 123-4567",
-    "website": "www.company.com",
-    "address": "123 Business Ave, City, State 12345"
-  }
-}
-```
-
-### 16. Thank You Slide
-```json
-{
-  "slide_number": 16,
-  "slide_type": "thank_you",
-  "content": {
-    "title": "Thank You",
-    "subtitle": "Questions & Discussion",
-    "contact": "presenter@company.com"
-  }
-}
-```
-
-## 🎨 Chart Types & Configuration
-
-### Supported Chart Types
-- `"bar"` - Bar charts for categorical data
-- `"line"` - Line charts for trends over time  
-- `"pie"` - Pie charts for proportional data
-- `"area"` - Area charts for cumulative data
-
-### Chart Color Handling
-The generator automatically applies theme colors to chart series. For pie charts, colors are applied to individual data points for proper multi-color visualization.
-
-## 🧪 Testing Framework
-
-The project includes comprehensive testing with working examples:
+### Testing
 
 ```bash
 # Run all tests
 python -m pytest tests/ -v
 
-# Test specific functionality  
+# Test specific functionality
 python -m pytest tests/test_simple_roundtrip.py -v
 
 # Quick validation
 python run_tests.py
 ```
 
-### Test Templates
-Five complete presentation templates in `tests/test_json/`:
+**Test Templates:**
 - `test.json` - Comprehensive 22-slide showcase
 - `test_corporate.json` - Business presentation
 - `test_education.json` - Educational content
-- `test_improved_business.json` - Strategic business  
+- `test_improved_business.json` - Strategic business
 - `test_improved_tech.json` - Technology showcase
 
-## 🤖 LLM Integration
+---
 
-Use the included `PROMPT_TEMPLATE.txt` with language models to generate properly-structured JSON presentations. The template includes:
+## 🤖 AI Integration
 
-- User customization fields at the top for easy editing
-- Complete slide type specifications with working examples
-- Critical JSON structure rules
-- Image URL guidelines and theme suggestions
+The platform uses Claude Sonnet 3.5 via LangChain agents for intelligent presentation generation:
 
-## ⚠️ Common Issues & Solutions
+**Multi-Agent Pipeline:**
+1. **OutlineAgent** - Creates presentation structure
+2. **ThemeAgent** - Selects appropriate theme
+3. **SlideContentAgent** - Generates content for each slide
+4. **ImageSuggestionAgent** - Suggests relevant images
 
-### JSON Structure Errors
-1. **Missing "title" field**: Add `"title"` at slide level for all non-title slides
-2. **Wrong chart structure**: Use `"data"` and `"options"` (not `"chart_data"`/`"chart_options"`)
-3. **Image field naming**: Use `"image"` for images, `"photo"` for team members
-4. **Quote attribution**: Use `"attribution"` field (not `"author"`)
-
-### Content Issues  
-1. **Empty slides**: Always provide meaningful content for all fields
-2. **Image loading**: Images fail gracefully with placeholder text
-3. **Chart data**: Ensure data arrays match label count
-
-## 📁 Project Structure
-
+**Usage:**
+```typescript
+// In web app
+const result = await generatePresentation({
+  prompt: "Create a presentation about AI in healthcare",
+  slides: 10,
+  style: "professional"
+});
 ```
-json2pptx/
-├── pptx-generator.py        # Main JSON→PPTX converter
-├── pptx-reader.py          # Main PPTX→JSON converter  
-├── PROMPT_TEMPLATE.txt     # LLM prompt for JSON generation
-├── requirements.txt        # Python dependencies
-├── tests/                  # Comprehensive test suite
-│   ├── test_json/         # Working example templates
-│   ├── test_simple_roundtrip.py
-│   └── ...
-└── README.md              # This file
+
+---
+
+## 📊 Current Status
+
+**Lines of Code:** ~15,000+
+**Components:** 40+ React components
+**Block Types:** 20+ defined (6 implemented)
+**Themes:** 25 professional themes
+**Slide Types:** 20+ supported
+**AI Agents:** 4 specialized agents
+**Tests:** Comprehensive Python test suite
+
+**Build Status:** ✅ Passing
+**TypeScript:** ✅ No errors
+**Firebase:** ✅ Configured
+**AI Generation:** ✅ Functional
+
+---
+
+## 🔧 Environment Variables
+
+```bash
+# Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+
+# Anthropic AI
+ANTHROPIC_API_KEY=
+
+# Optional integrations
+UNSPLASH_ACCESS_KEY=
+GIPHY_API_KEY=
 ```
+
+---
 
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Add tests for new functionality
-4. Ensure all tests pass: `python -m pytest tests/ -v`
+4. Ensure builds pass: `npm run build`
 5. Submit a pull request
+
+---
 
 ## 📄 License
 
 MIT License - see LICENSE file for details.
 
+---
+
 ## 🔗 Links
 
 - **Repository**: https://github.com/lhstorm/json2pptx
 - **Issues**: https://github.com/lhstorm/json2pptx/issues
-- **python-pptx docs**: https://python-pptx.readthedocs.io/
+- **Documentation**: See `/docs` folder
+- **python-pptx**: https://python-pptx.readthedocs.io/
 
 ---
 
-*Generate professional PowerPoint presentations programmatically with structured JSON data and comprehensive slide type support.*
+*Build professional presentations with AI-powered generation, visual block editing, and seamless JSON-to-PowerPoint conversion.*
